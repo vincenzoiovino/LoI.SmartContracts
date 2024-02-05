@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-// Adapted from code of Christian Reitwiessner and Mustafa Al-Bassam (mus@musalbas.com, https://github.com/musalbas/solidity-BN256G2)
-
+// Copyright Vincenzo Iovino, 2024
 pragma solidity ^0.8.0;
 
 import {BN254} from "./BN254.sol";
