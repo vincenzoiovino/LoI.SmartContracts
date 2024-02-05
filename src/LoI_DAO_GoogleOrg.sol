@@ -8,8 +8,8 @@ import {LoI} from "./libs/LoI.sol";
 contract LoI_DAO_GoogleOrg {
     struct accountVerification {
         bytes date; // the date corresponding to the token used to register.
-        // If an email account in the organisation passes over from Alice to Bob, Bob can register with a token of a strictly increasing date and the old token of Alice will not longer be valid.
-        // The implict assumption here is htat email accounts cannot pass from a person to another in less than one month. This seems reasonable for organisations.
+        // If an email account in the organisation passes over from Alice to Bob, Bob can register with a token for a strictly increasing date and the old token of Alice will not longer be valid.
+        // The implict assumption here is that email accounts cannot pass from a person to another in less than one month. This seems reasonable for organisations.
         // Observe that if an email account never pass to a different person, the token verification is done only once and successively only a super cheap verification of about 3k GAS cost will be carried out.
         address addr; // the address associated to this email account
     }
