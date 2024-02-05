@@ -17,7 +17,10 @@ contract LoI_DAO_GoogleOrg {
     struct ProposalReferendum {
         uint256 startBlock; // when the voting process starts
         uint256 endBlock; // when the voting process ends
-        bytes8 encryptedProposal; // tinyurl.com (seems to) give links with path of only 8 characters. If you use a different tinyurl service change this.
+        bytes8 encryptedProposal; // The proposal is encrypted with the option -t -h --ethereum of node encrypts.js and this gives an hex string representing an 8 characters string S. 
+        // From S you can obtain the ciphertext using https://tinyurl.com/S
+        // Indeed the latter is the tinyurl that returns in turn a long URL of the form https://aragon.org/CT where CT is the ciphertext that can be used to decrypt (off-chain) the proposal
+        // tinyurl.com (seems to) give links with path of only 8 characters. If you use a different tinyurl service change this. 
         uint256 numberYES;
         uint256 numberNO;
         mapping(bytes => bool) alreadyVoted;
