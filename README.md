@@ -75,7 +75,7 @@ Now Alice can cast a YES/NO vote by just invoking the method ``voteProposalRefer
 #### Result of the voting process
 When ``endBlock`` is reached anyone can get the result invoking the method ``getProposalReferendumResult`` with input the proposal ID.
 
-#### What happens if Alice leaves oldcrypto.com?
+### What happens if Alice leaves oldcrypto.com?
 Suppose that Alice Simpson leaves the company ``oldcrypto.com`` and a new person named Alice Johnson enters the company and gets the same email address ``alice@oldcrypto.com``.
 The natural question is how to prevent Alice Simpson to still participate in the DAO.
 
