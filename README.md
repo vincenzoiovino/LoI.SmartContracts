@@ -46,20 +46,21 @@ The Json file ``signature.json`` will contain a field ``asTuple`` that we suppos
 
 Alice can invoke the method ``verifyIdentity`` of the contract with parameter ``sig`` equal to ``Sig``, parameter ``username`` equal to ``alice`` and parameter ``date`` equal to ``..2024..1``, possibly adapting the date based on the value previously passed with the option ``-m`` to the command ``get_token``.
 From this moment Alice is registered.
-She can at any time repeat this operation only if she wants to associate her email address to a different Eth address.
+She can at any time repeat this operation whenever she wants to associate her email address to a different Eth address.
 
 #### Create a proposal with encrypted content
-Charlie wants to  submit a proposal for the DAO. Let us say that the content of the proposal is in the file ``Prop``.
+Suppose that Charlie wants to  submit a proposal to the DAO. Let us say that the content of the proposal is in the file ``Prop``.
 Charlie runs the following command off-chain:
 ```bash
 node encrypt -k "$(cat mpk)"  -e oldcrypto.com -oc ciphertext -cca2 --ethereum -t -h < Prop
 ```
 Observe that Charlie does not need to contact the `LoI` nodes to execute the latter command. 
-The file ciphertext contains a string of the form ``3237786b6c396174``. The string ``0x3237786b6c396174`` will be then the parameter ``encryptedProposal`` that Charlie will use next.
-Charlie can invoke the method ``setProposalReferendum`` with parameter ``proposalReferendumID`` set to a random ``uint256``, the so computed parameter ``encryptedProposal``, and the ``uint256`` values ``startBlock`` and ``endBlock`` representing resp. the start and the end of the voting process for the proposal
+The file ``ciphertext`` will contain a string of the form ``3237786b6c396174``. The string ``0x3237786b6c396174`` will be the parameter ``encryptedProposal`` that Charlie must use next.
+
+Charlie can invoke the method ``setProposalReferendum`` with parameter ``proposalReferendumID`` set to a random ``uint256``, the so computed parameter ``encryptedProposal``, and the ``uint256`` values ``startBlock`` and ``endBlock`` representing resp. the start and the end block of the voting process for the given proposal.
 
 #### Read an encryptedd proposal
-Any member of the DAO who owns the toke ``google_tokgroup`` (see above) can perform the following actions.
+Any member of the DAO who owns the token ``google_tokgroup`` (i.e., any person with an account of the form ``user@oldcrypto.com``) can perform the following actions.
 
 Invoke the method ``getProposalReferendum`` with parameter the proposal ID to get a string of the form ``3237786b6c396174``. Store the following string in the file ``ciphertext``.
 Run the following command:
@@ -70,14 +71,17 @@ The output will be the decrypted proposal that was set by Charlie.
 Nobody else, except the members of ``@oldcrypto.com`` can decrypt the proposal.
 
 ##### Cast a vote
-Now Alice can cast a YES/NO vote by just invoking the metho ``voteProposalReferendum`` with parameter username set to ``alice``, parameter preference set to ``0`` (for NO) or ``1`` for YES and ``proposalReferendumID`` set to the ID of the proosal (see above).
+Now Alice can cast a YES/NO vote by just invoking the method ``voteProposalReferendum`` with parameter username set to ``alice``, parameter preference set to ``0`` (for NO) or ``1`` (for YES) and ``proposalReferendumID`` set to the ID of the proosal (see above).
 #### Result of the voting process
 When ``endBlock`` is reached anyone can get the result invoking the method ``getProposalReferendumResult`` with input the proposal ID.
 
 #### What happens if Alice leaves oldcrypto.com?
 Suppose that Alice Simpson leaves the company ``oldcrypto.com`` and a new person named Alice Johnson enters the company and gets the same email address ``alice@oldcrypto.com``.
-The natural question is whether Alice Simpson can still participate in the DAO or can be banned.
+The natural question is how to prevent Alice Simpson to still participate in the DAO.
+
 The solution is the following.
 Alice Johnson can register and get a token for a different month (strictly higher than the one corresponding to the token of Alice Simpson) and can use this token to register again her email address under a new Ethereum address.
 This will invalidate the token of Alice Simpson.
 The implicit assumption here is that email addresses pass over persons with a frequency of at least one month that is reasonable in organisations.
+
+Similar tweaks can be used to limit the readability of encrypted proposals to ex members of the organisation.
