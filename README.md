@@ -10,7 +10,7 @@ We implemented the idea in the contract [`Blik.sol`](https://github.com/vincenzo
 We assume the reader familiar with the basic `LoI` commands described [here](https://github.com/aragonzkresearch/leagueofidentity) and we assume that the contract `Blik.sol` has been deployed to Ethereum.
 Moreover, we suppose that the file `mpk` contains the master public key of the `LoI` system.
 #### Make a deposit
-Suppose Alice wants to makde a deposit of `n` coins in favour of Bob with address `bob@oldcrypto.com` and we suppose that `oldcrypto.com` is a Google Business domain.
+Suppose Alice wants to make a deposit of `n` coins in favour of Bob who owns the email address `bob@oldcrypto.com`. We suppose that `oldcrypto.com` is a Google Business domain.
 Alice does the following. 
 
 Run the command:
