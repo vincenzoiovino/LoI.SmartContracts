@@ -55,6 +55,9 @@ contract LoI_DAO_GoogleOrg {
         uint256 startBlock,
         uint256 endBlock
     ) public {
+        require(
+            ProposalsReferendum[proposalReferendumId].encryptedProposal == 0
+        );
         ProposalsReferendum[proposalReferendumId]
             .encryptedProposal = encryptedProposal;
         ProposalsReferendum[proposalReferendumId].startBlock = startBlock;
