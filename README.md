@@ -42,7 +42,7 @@ Then, as explained [here](https://github.com/aragonzkresearch/leagueofidentity#p
 Alice can make the deposit specifying the Bob's phone number instead of his email address.
 
 
-## LoI for Google Business domains
+## DAOs of Google Business domains
 As an example we provide a template of a DAO whose members can be the owners of emails of the form `user@domain.com` where `domain.com` is a parameter of the DAO.
 Only users with such emails can cast votes for proposals. Moreover, the content of a proposal is encrypted: only owners of emails that end in `@domain.com` can read the proposal.
 
