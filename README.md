@@ -34,6 +34,14 @@ node decrypt -k "$(cat mpk)" -T "$(cat google_tok)"  -e bob@oldcrypto.com -c "$(
 This will output an hex string of the form `fd5daac9cd0e8b4e1f80d34c8ff90b35cc5450eaf6422168b3f50402da88f865`. Let `x` be the previous string with `0x` prepended.
 Bob can now invoke the method `MakeWithdrawal` of `Blik.sol` with input `h` and `x`. This will transfer the `n` coins from the contract to Bob.
 
+
+#### Deposits in favour of phone numbers
+The contract and the commands can be also used to make deposits in favour of phone numbers as in the original Polish BLIK system.
+Bob just needs to have (or create) a Google account and to verify his phone number in that Google account.
+Then, as explained [here](https://github.com/aragonzkresearch/leagueofidentity#phone-number-encryption-phencryption), Bob can get a token for his phone number. 
+Alice can make the deposit specifying the Bob's phone number instead of his email address.
+
+
 ## LoI for Google Business domains
 As an example we provide a template of a DAO whose members can be the owners of emails of the form `user@domain.com` where `domain.com` is a parameter of the DAO.
 Only users with such emails can cast votes for proposals. Moreover, the content of a proposal is encrypted: only owners of emails that end in `@domain.com` can read the proposal.
