@@ -7,7 +7,7 @@ This repo contains examples of  Ethereum smart contracts to be used in combinati
 We implemented the idea in the contract [`Blik.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/Blik.sol) that can be used in combination with `LoI` tools as follows.
 
 ### How to Test it
-We assume the reader familiar with the basic `LoI` commands [here](https://github.com/aragonzkresearch/leagueofidentity) and we assume that the contract `Blik.sol` has been deployed to Ethereum.
+We assume the reader familiar with the basic `LoI` commands described [here](https://github.com/aragonzkresearch/leagueofidentity) and we assume that the contract `Blik.sol` has been deployed to Ethereum.
 Moreover, we suppose that the file `mpk` contains the master public key of the `LoI` system.
 #### Make a deposit
 Suppose Alice wants to makde a deposit of `n` coins in favour of Bob with address `bob@oldcrypto.com` and we suppose that `oldcrypto.com` is a Google Business domain.
@@ -38,7 +38,7 @@ As an example we provide a template of a DAO whose members can be the owners of 
 Only users with such emails can cast votes for proposals. Moreover, the content of a proposal is encrypted: only owners of emails that end in `@domain.com` can read the proposal.
 
 ### How to Test it
-We assume the reader familiar with the basic `LoI` commands [here](https://github.com/aragonzkresearch/leagueofidentity).
+We assume the reader familiar with the basic `LoI` commands described [here](https://github.com/aragonzkresearch/leagueofidentity).
 
 #### Initialize the contract
 The contract [`LoI_DAO_GoogleOrg.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/LoI_DAO_GoogleOrg.sol) must be initialized with two parameters: `mpk` and `domain`.
