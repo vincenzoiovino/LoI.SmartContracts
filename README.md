@@ -26,7 +26,7 @@ Deploy the contract with the parameters ``mpk`` set to ``[[137065029502079103437
 Moreover, store the first string ``1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd7022aa39c80b66fa066 1e4d9b127927dfc64355a53b75d6b03d92eedf5bd9b660f76d085b236c63c38a 2abbd2f34f5fbb09e6d7474a4037d0e300b9eb00df83db94c5e521fffc43893c 2dddbf99aaabe6352a17aba4a7bbd5a8eb2eb40d25f95ee6f9b10e2cf8c564a4`` in the file ``mpk`` that will be used for next commands.
 
 ##### Register a user in the DAO
-Suppose the user ``alice@oldcrypto.com`` wants to register in the DAO.
+Suppose the user Alice who owns the email ``alice@oldcrypto.com`` wants to register in the DAO.
 
 Alice gets her Google access token via the `LoI` web interface and stores it in the file ``google_at`` and performs off-chain e.g. the following commands:
 
@@ -35,16 +35,16 @@ node get_token.js -t 2 -n 3 -A $(cat google_at) -l 1 http://localhost:8001 2 htt
 node get_token.js -t 2 -n 3 -A $(cat google_at) -l 1 http://localhost:8001 2 http://localhost:8002 -ot google_tokgroup --ethereum -m 1.2024
 ```
 She will get two crypto tokens, the token ``google_tok`` for her personl account ``alice@oldcrypto.com`` and the token ``google_tokgroup`` for the entire group ``oldcrypto.com`` that will allow her to read encrypted proposals.
-Note that we used parameter `-m 1.2024` to get a token for the month of February 2024, change it according to your date.
+Note that we used parameter `-m 1.2024` to get a token for the month of February 2024, change it according to your current date.
 
 Suppose Alice's Eth address is stored in the file ``addr``.
 Alice can compute the following signature:
 ```bash
-node sign -k "$(cat mpk)" -T "$(cat google_tok)" -e alicde@oldcrypto.com -os signature.json -j -h --ethereum < addr
+node sign -k "$(cat mpk)" -T "$(cat google_tok)" -e alicee@oldcrypto.com -os signature.json -j -h --ethereum < addr
 ```
 The Json file ``signature.json`` will contain a field ``asTuple`` that we suppose henceforth to be the string ``Sig``.
 
-Alice can invoke the method ``verifyIdentity`` of the contract with parameter ``sig`` equal to ``Sig, parameter ``username`` equal to ``alice`` and parameter ``date`` equal to ``..2024..1``, possibly adapting the date based on the value previously passed with the option ``-m`` to the command ``get_token``.
+Alice can invoke the method ``verifyIdentity`` of the contract with parameter ``sig`` equal to ``Sig``, parameter ``username`` equal to ``alice`` and parameter ``date`` equal to ``..2024..1``, possibly adapting the date based on the value previously passed with the option ``-m`` to the command ``get_token``.
 From this moment Alice is registered.
 She can at any time repeat this operation only if she wants to associate her email address to a different Eth address.
 
