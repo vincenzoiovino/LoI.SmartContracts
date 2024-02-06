@@ -85,3 +85,8 @@ This will invalidate the token of Alice Simpson.
 The implicit assumption here is that email addresses pass over persons with a frequency of at least one month that is reasonable in organisations.
 
 Similar tweaks can be used to limit the readability of encrypted proposals to ex members of the organisation.
+
+### Other web2 and web3 applications
+Observe that the token can be used not only to register in the smart contract but also to sign any sort of data, e.g., invoices, reviews, etc. So ``oldcrypto.com`` can make internal use of such signatures without having a PKI.
+
+The `LoI` token could be profitably used in other blockchains like `Cosmos` to remove or have less dependency from accounts. You could have a smart contract in which the transactions can be submitted only by users who can submit signatures for certain types of identities. 
