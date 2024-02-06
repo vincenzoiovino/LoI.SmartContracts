@@ -1,6 +1,38 @@
 # LoI.SmartContracts
 This repo contains examples of  Ethereum smart contracts to be used in combination with the [League of Identity](https://github.com/aragonzkresearch/leagueofidentity) (LoI) system.
 
+
+## Blik for web3
+[Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Polish-BLIK-for-web3) we described applications of `LoI` to a sort of BLIK system for web3.
+We implemented the idea in the contract [`Blik.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/Blik.sol) that can be used in combination with `LoI` tools as follows.
+
+### How to Test it
+We assume the reader familiar with the basic `LoI` commands [here](https://github.com/aragonzkresearch/leagueofidentity) and we assume that the contract `Blik.sol` has been deployed to Ethereum.
+Moreover, we suppose that the file `mpk` contains the master public key of the `LoI` system.
+#### Make a deposit
+Suppose Alice wants to makde a deposit of `n` coins in favour of Bob with address `bob@oldcrypto.com` and we suppose that `oldcrypto.com` is a Google Business domain.
+Alice does the following. 
+
+Run the command:
+```bash
+node encrypt -k "$(cat mpk)"  -e bob@oldcrypto.com -oc ciphertext --ethereum -t -h -b hash
+```
+This command will write into the file `ciphertext` a string of the form `32647a7236776532` and in the file `hash` a string of the form `266f787b7a631888c2b97dd64b910cc9d4e5bf5f93fd7c90fee73f45bff0c0e2`.
+Let us call `CT` the first string (with `0x` prepended) and `h` the second string (with `0x` prepended).
+
+Alice can invoke the method `MakeDeposit` of the `Blik` contract with the so given parameters `h` and `CT` along with a transfer of `n` coins.
+The coins have been now deposited into the contract and it is not visibile to anyone except Bob that the deposit is in favour of `bob@oldcrypto.com`.
+
+Bon sees the transaction for the deposit corresponding to `h` and the hex string `CT` and save it ino the file `ciphertext`.
+Bob can now get his Google access token via the `LoI` web interface and use it to get a token for his email address from the `LoI` nodes and does the follwing. Suppose that the token is in the file `google_tok`.
+
+Run the command:
+```bash
+node decrypt -k "$(cat mpk)" -T "$(cat google_tok)"  -e bob@oldcrypto.com -c "$(cat ciphertext)"  --ethereum -t -h -hm
+```
+This will output an hex string of the form `fd5daac9cd0e8b4e1f80d34c8ff90b35cc5450eaf6422168b3f50402da88f865`. Let `x` be the previous string with `0x` prepended.
+Bob can now invoke the method `MakeWithdrawal` of `Blik.sol` with input `h` and `x`. This will transfer the `n` coins from the contract to Bob.
+
 ## LoI for Google Business domains
 As an example we provide a template of a DAO whose members can be the owners of emails of the form `user@domain.com` where `domain.com` is a parameter of the DAO.
 Only users with such emails can cast votes for proposals. Moreover, the content of a proposal is encrypted: only owners of emails that end in `@domain.com` can read the proposal.
