@@ -4,6 +4,7 @@ This repo contains examples of  Ethereum smart contracts to be used in combinati
 
 ## Blik for web3
 [Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Polish-BLIK-for-web3) we described applications of `LoI` to a sort of BLIK system for web3.
+Note that this on-chain payment system can be seen as a variant of the [Bank3 for Wallets](https://github.com/vincenzoiovino/bank3) system.
 We implemented the idea in the contract [`Blik.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/Blik.sol) that can be used in combination with `LoI` tools as follows.
 
 ### How to Test it
