@@ -127,6 +127,13 @@ This will invalidate the token of Alice Simpson.
 The implicit assumption here is that email addresses pass over persons with a frequency of at least one month that is reasonable in organisations.
 
 Similar tweaks can be used to limit the readability of encrypted proposals to ex members of the organisation.
+### Alternative and wallet-less system
+In the current design we associate an account to an email address to save GAS cost: once the association is done the subsequent transactions are cheap.
+In theory, it would be possible to have a system that eliminates wallets at all.
+The user could submit to a service his/her transactions that includes the signature of his/her own voting option for a given proposal and the service takes in charge the submission of the transaction on-chain.
+The service must be trusted only to not censor transactions but the user can check that and in the case can submit the transaction from a wallet.
+
+Observe that in this case the signature is relative as before to user's email but the signed message consists of a proposal ID and a voting option (rather than just an address) and all such signatures are computed from the same token. This witnesses the power and flexibility of the identity-based approach.
 
 ### Other web2 and web3 applications
 Observe that the token can be used not only to register in the smart contract but also to sign any sort of data, e.g., invoices, reviews, etc. So ``oldcrypto.com`` can make internal use of such signatures without having a PKI.
