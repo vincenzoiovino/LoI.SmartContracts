@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-// Copyright Vincenzo Iovino, 2024
+// Copyright Vincenzo Iovino, Aragon ZK Research, 2024
 
 pragma solidity >=0.7.0 <0.9.0;
 

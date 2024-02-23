@@ -1,7 +1,6 @@
 # LoI.SmartContracts
 This repo contains examples of  Ethereum smart contracts to be used in combination with the [League of Identity](https://github.com/aragonzkresearch/leagueofidentity) (LoI) system.
 
-
 ## Blik for web3
 [Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Polish-BLIK-for-web3) we described applications of `LoI` to a sort of BLIK system for web3 that we call `Blik3`. In `Blik3` Alice can make a deposit in favour of Bob by just specifying Bob's email address and nobody, except Bob, will be able to see that the deposit is in favour of him.
 Note that this on-chain payment system can be seen as a variant of the [Bank3 for Wallets](https://github.com/vincenzoiovino/bank3) system.
