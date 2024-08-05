@@ -5,11 +5,25 @@ This repo contains examples of  Ethereum smart contracts to be used in combinati
 [Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Polish-BLIK-for-web3) we described applications of `LoI` to a sort of BLIK system for web3 that we call `Blik3`. In `Blik3` Alice can make a deposit in favour of Bob by just specifying Bob's email address and nobody, except Bob, will be able to see that the deposit is in favour of him.
 Note that this on-chain payment system can be seen as a variant of the [Bank3 for Wallets](https://github.com/vincenzoiovino/bank3) system.
 We implemented the idea in the contract [`Blik.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/Blik.sol) that can be used in combination with `LoI` tools as follows.
+The system has two variants, a basic one that can be used when Alice and Bob communicate at deposit time and a general one that does not need pre-communication. The reason on why the basic variant can be used only when Alice and Bob communicate at deposit time is that if the basic variant were used naively without pre-communication then Alice could perform an alleged deposit in favour of Bob but Alice could still know the witness that can be used to perform the withdrawal, that is even if Bob verifies that there is a deposit in favour of himself this would not be sufficient to exclude that Alice can claim it back. For this reason, this variant can be used only in a setting where, at deposit time, it is Bob the one to compute the ciphertext and request Alice to deposit it onchain along with the coins. The general one does not suffer this issue. 
 
-### How to Test it
+
+### How to Test the basic and general variants
 We assume the reader familiar with the basic `LoI` commands described [here](https://github.com/aragonzkresearch/leagueofidentity) and we assume that the contract `Blik.sol` has been deployed to Ethereum.
-Moreover, we suppose that the file `mpk` contains the master public key of the `LoI` system.
-#### Make a deposit
+
+Precisely, recall that when you compute the master public key with the command:
+```bash
+node compute_shares -t 2 -n 3 --ethereum
+```
+you will get an output that contains the following lines (among others):
+```bash
+reconstructed master public key: 1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd7022aa39c80b66fa066 1e4d9b127927dfc64355a53b75d6b03d92eedf5bd9b660f76d085b236c63c38a 2abbd2f34f5fbb09e6d7474a4037d0e300b9eb00df83db94c5e521fffc43893c 2dddbf99aaabe6352a17aba4a7bbd5a8eb2eb40d25f95ee6f9b10e2cf8c564a4
+reconstructed master public key as Ethereum tuple: [[13706502950207910343706560538280652811815673551122904553485492739850509730698,16073960482686030108142259199455609210079009765551608569343005038231348551782],[20745873763960892318317663603992660951953361594491582428518987779361705649316,19328995967969664651933314377729245708471534526295335040608300242158949206332]]
+```
+
+In that case, we suppose that the file `mpk` contains the first string (i.e., `1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd7022aa39c80b66fa066 1e4d9b127927dfc64355a53b75d6b03d92eedf5bd9b660f76d085b236c63c38a 2abbd2f34f5fbb09e6d7474a4037d0e300b9eb00df83db94c5e521fffc43893c 2dddbf99aaabe6352a17aba4a7bbd5a8eb2eb40d25f95ee6f9b10e2cf8c564a4`) and the `Blik.sol` contract must be initialized with the latter string (i.e., `[[13706502950207910343706560538280652811815673551122904553485492739850509730698,16073960482686030108142259199455609210079009765551608569343005038231348551782],[20745873763960892318317663603992660951953361594491582428518987779361705649316,19328995967969664651933314377729245708471534526295335040608300242158949206332]]`). 
+
+#### Make a deposit in the basic variant
 Suppose Alice wants to make a deposit of `n` coins in favour of Bob who owns the email address `bob@oldcrypto.com`. We suppose that `oldcrypto.com` is a Google Business domain.
 Alice does the following. 
 
@@ -23,7 +37,7 @@ Let us call `CT` the first string (with `0x` prepended) and `h` the second strin
 Alice can invoke the method `MakeDeposit` of the `Blik` contract with the so given parameters `h` and `CT` along with a transfer of `n` coins.
 The coins have been now deposited into the contract and it is not visibile to anyone, except to Bob, that the deposit is in favour of `bob@oldcrypto.com`.
 
-#### Make a withdrawal
+#### Make a withdrawal in the basic variant
 Bon sees the transaction for the deposit corresponding to `h` and the hex string `CT` and save it ino the file `ciphertext`.
 Bob can now get his Google access token via the `LoI` web interface and use it to get a token for his email address from the `LoI` nodes and does the follwing. Suppose that Bob has stored the token into the file `google_tok`.
 
@@ -35,6 +49,53 @@ This will output an hex string of the form `fd5daac9cd0e8b4e1f80d34c8ff90b35cc54
 Bob can now invoke the method `MakeWithdrawal` of `Blik.sol` with input `h` and `x`. This will transfer the `n` coins from the contract to Bob.
 
 
+#### Make a deposit in the general variant
+Suppose Alice wants to make a deposit of `n` coins in favour of Bob who owns the email address `bob@oldcrypto.com`. We suppose that `oldcrypto.com` is a Google Business domain.
+Alice does the following. 
+
+Run the command:
+```bash
+node encrypt.js -k "$(cat mpkbn)" -e alice@oldcrypto.com   --cca2 --ethereum -bf hash -oc ciphertext  -t -h
+```
+This command will write into the file `ciphertext` a string of the form `32647a7236776532` and in the file `hash` a string containing an EC point.
+Moreover, the output will include a message like:
+```bash
+value D as ethereum tuple: [20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272]
+```
+Let us call `CT` the first string with `0x` prepended (i.e. `0x32647a7236776532`) and `D` the latter string (i.e., `[20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272]`).
+
+Alice can invoke the method `MakeDepositFill` of the `Blik` contract with the so given parameters `D` and `CT` along with a transfer of `n` coins.
+The coins have been now deposited into the contract and it is not visibile to anyone, except to Bob, that the deposit is in favour of `bob@oldcrypto.com`.
+#### Verify that there is a payment in favour of yourself
+Bob can at any time get the values `CT` and `D` from the chain and store them resp. in the files `ciphertext` and `hash`.
+(Precisely, the file `hash` should contain the point `D` in the format expected by the `mcl` library. We are supposing that this has been already done. As TODO, the file `hash` input to the next command should contain a point in the ethereum tuple format and convert it internally.)
+Bob can now get his Google access token via the `LoI` web interface and use it to get a token for his email address from the `LoI` nodes and does the follwing. Suppose that Bob has stored the token into the file `google_tok`.
+Bob can run the following command:
+```bash
+node decrypt.js -T "$(cat google_tok)" -k "$(cat mpkbn)" -e mrguizzo@gmail.com --ethereum --cca2 -c "$(cat ciphertext)" -bfi hash --addr "6A38Ea6a701c568545dCfcB03FcB875f56beddD4" -t -h -hm
+``` 
+In the latter command, the option `addr` takes as parameter the Bob's Ethereum address (without `0x` prepended) that we will henceforth denotes as `addr`.
+The command wil give an output like:
+```bash
+DEBUG: Verification of token: success.
+{
+ "data": {
+             "success:": "1",
+             "ciphertext:": "0x32633471356f7133",
+             "addr:": "5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+             "MPK:": "[[17650401953877851439635577206110766953856761406923475418003307457561889540315,21200720758627169108385381836933178062103968834651067635052438190446348782562],[19663398795984464822343332592454950952846592629461984989829477392159714729078,21167609696476223494515294740194964327788425825089244977948745836321546859634]]",
+             "D:": "[20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272]",
+             "pi_as_ethereum_tuple:": "[[20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272],[17964776762919115480908951166088615983588472323663818354342475952795604807310,6026072288148381358375565042527336562160721558147760609754174411574469710041],[17896744319167655821192979500890807436364245859728727217059398812965234769019,14902363746557910617337415691210656913190411209282532776782689108758256696992],[21619743767606051892633712027137783914414978270016625281386141462123867712341,5450653621643048376967433768114031560732860631210870758560469946337282342214],16948305800401486008714704305374081004295372365741481924480239224850706571412]",
+            }
+}
+decrypted flag+message: 1daa239b83f75f89f415c03c9f856378eb51480784a1e48e9d6fd65b5ebcb6116
+```
+The field ``success` in the JSON string indicates that the deposit is withdrawable. In that case the ethereum tuples ``pi_as_ethereum_tuple`` is the witness that Bob can use to perform a withdrawal. Henceforth we will indicate such a tuple as ``pi``.
+
+
+#### Make a withdrawal in the general variant
+After that Bob has verified above that a certain deposit is in favour of himself, Bob can decide to withdraw by 
+invoking the method `MakeWithdrawalFull` of `Blik.sol` with input the above string `pi`. This will transfer the `n` coins from the contract to Bob.
 #### Deposits in favour of phone numbers
 The contract and the commands can be also used to make deposits in favour of phone numbers as in the original Polish BLIK system.
 Bob just needs to have (or create) a Google account and to verify his phone number in that Google account.
@@ -63,8 +124,8 @@ reconstructed master public key: 1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd
 reconstructed master public key as Ethereum tuple: [[13706502950207910343706560538280652811815673551122904553485492739850509730698,16073960482686030108142259199455609210079009765551608569343005038231348551782],[20745873763960892318317663603992660951953361594491582428518987779361705649316,19328995967969664651933314377729245708471534526295335040608300242158949206332]]
 ```
 
-Deploy the contract with the parameters ``mpk`` set to ``[[13706502950207910343706560538280652811815673551122904553485492739850509730698,16073960482686030108142259199455609210079009765551608569343005038231348551782],[20745873763960892318317663603992660951953361594491582428518987779361705649316,19328995967969664651933314377729245708471534526295335040608300242158949206332]]`` and domain set to the domain of your organisation.
-Moreover, store the first string ``1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd7022aa39c80b66fa066 1e4d9b127927dfc64355a53b75d6b03d92eedf5bd9b660f76d085b236c63c38a 2abbd2f34f5fbb09e6d7474a4037d0e300b9eb00df83db94c5e521fffc43893c 2dddbf99aaabe6352a17aba4a7bbd5a8eb2eb40d25f95ee6f9b10e2cf8c564a4`` in the file ``mpk`` that will be used for next commands.
+Deploy the contract with the parameters ``mpk`` set to the latter tuple (i.e., ``[[13706502950207910343706560538280652811815673551122904553485492739850509730698,16073960482686030108142259199455609210079009765551608569343005038231348551782],[20745873763960892318317663603992660951953361594491582428518987779361705649316,19328995967969664651933314377729245708471534526295335040608300242158949206332]]``) and domain set to the domain of your organisation.
+Moreover, store the first string (i.e., ``1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd7022aa39c80b66fa066 1e4d9b127927dfc64355a53b75d6b03d92eedf5bd9b660f76d085b236c63c38a 2abbd2f34f5fbb09e6d7474a4037d0e300b9eb00df83db94c5e521fffc43893c 2dddbf99aaabe6352a17aba4a7bbd5a8eb2eb40d25f95ee6f9b10e2cf8c564a4``) in the file ``mpk`` that will be used for next commands.
 
 ##### Register a user in the DAO
 Suppose the user Alice who owns the email ``alice@oldcrypto.com`` wants to register in the DAO.
@@ -78,10 +139,10 @@ node get_token.js -t 2 -n 3 -A $(cat google_at) -l 1 http://localhost:8001 2 htt
 She will get two crypto tokens, the token ``google_tok`` for her personl account ``alice@oldcrypto.com`` and the token ``google_tokgroup`` for the entire group ``oldcrypto.com`` that will allow her to read encrypted proposals.
 Note that we used parameter `-m 1.2024` to get a token for the month of February 2024, change it according to your current date.
 
-Suppose Alice's Eth address is stored in the file ``addr``.
+Suppose Alice's Eth address is stored in the file ``addr`` (the address is the hexadecimal string without `0x` prepended).
 Alice can compute the following signature:
 ```bash
-node sign -k "$(cat mpk)" -T "$(cat google_tok)" -e alicee@oldcrypto.com -os signature.json -j -h --ethereum < addr
+node sign -k "$(cat mpk)" -T "$(cat google_tok)" -e alice@oldcrypto.com -os signature.json -j -h --ethereum < addr
 ```
 The Json file ``signature.json`` will contain a field ``asTuple`` that we suppose henceforth to be the string ``Sig``.
 
@@ -100,7 +161,7 @@ The file ``ciphertext`` will contain a string of the form ``3237786b6c396174``. 
 
 Charlie can invoke the method ``setProposalReferendum`` with parameter ``proposalReferendumID`` set to a random ``uint256``, the so computed parameter ``encryptedProposal``, and the ``uint256`` values ``startBlock`` and ``endBlock`` representing resp. the start and the end block of the voting process for the given proposal.
 
-#### Read an encryptedd proposal
+#### Read an encrypted proposal
 Any member of the DAO who owns the token ``google_tokgroup`` (i.e., any person with an account of the form ``user@oldcrypto.com``) can perform the following actions.
 
 Invoke the method ``getProposalReferendum`` with parameter the proposal ID to get a string of the form ``3237786b6c396174``. Store the following string in the file ``ciphertext``.
