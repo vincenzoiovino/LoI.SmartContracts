@@ -82,7 +82,7 @@ Bob can run the following command:
 ```bash
 node decrypt.js -T "$(cat google_tok)" -k "$(cat mpk)" -e alice@oldcrypto.com --ethereum --cca2 -c "$(cat ciphertext)" -bfi hash --addr "6A38Ea6a701c568545dCfcB03FcB875f56beddD4" -t -h -hm
 ``` 
-In the latter command, the option `addr` takes as parameter the Bob's Ethereum address (without `0x` prepended) that we will henceforth denotes as `addr`.
+In the latter command, the option `addr` takes as parameter the Bob's Ethereum address (without `0x` prepended).
 The command wil give an output like:
 ```bash
 DEBUG: Verification of token: success.
@@ -90,7 +90,7 @@ DEBUG: Verification of token: success.
  "data": {
              "success:": "1",
              "ciphertext:": "0x32633471356f7133",
-             "addr:": "5B38Da6a701c568545dCfcB03FcB875f56beddC4",
+             "addr:": "6A38Ea6a701c568545dCfcB03FcB875f56beddD4",
              "MPK:": "[[17650401953877851439635577206110766953856761406923475418003307457561889540315,21200720758627169108385381836933178062103968834651067635052438190446348782562],[19663398795984464822343332592454950952846592629461984989829477392159714729078,21167609696476223494515294740194964327788425825089244977948745836321546859634]]",
              "D:": "[20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272]",
              "pi_as_ethereum_tuple:": "[[20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272],[17964776762919115480908951166088615983588472323663818354342475952795604807310,6026072288148381358375565042527336562160721558147760609754174411574469710041],[17896744319167655821192979500890807436364245859728727217059398812965234769019,14902363746557910617337415691210656913190411209282532776782689108758256696992],[21619743767606051892633712027137783914414978270016625281386141462123867712341,5450653621643048376967433768114031560732860631210870758560469946337282342214],16948305800401486008714704305374081004295372365741481924480239224850706571412]",
@@ -98,7 +98,7 @@ DEBUG: Verification of token: success.
 }
 decrypted flag+message: 1daa239b83f75f89f415c03c9f856378eb51480784a1e48e9d6fd65b5ebcb6116
 ```
-The field ``success` in the JSON string indicates that the deposit is withdrawable. In that case the ethereum tuples ``pi_as_ethereum_tuple`` is the witness that Bob can use to perform a withdrawal. Henceforth we will indicate such a tuple as ``pi``.
+The field ``success`` in the JSON string indicates that the deposit is withdrawable. In that case the ethereum tuples ``pi_as_ethereum_tuple`` is the witness that Bob can use to perform a withdrawal. Henceforth we will indicate such a tuple as ``pi``.
 
 
 #### Make a withdrawal in the general variant
