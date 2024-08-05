@@ -7,7 +7,9 @@ Note that this on-chain payment system can be seen as a variant of the [Bank3 fo
 We implemented the idea in the contract [`Blik.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/Blik.sol) that can be used in combination with `LoI` tools as follows.
 
 The system has two variants, a basic one that can be used when Alice and Bob communicate at deposit time and a general one that does not need pre-communication. 
+
 Precisely, if the basic variant were used naively without pre-communication then Alice could perform an alleged deposit in favour of Bob but Alice could still know the witness that can be used to perform the withdrawal, that is even if Bob verifies that there is a deposit in favour of himself this would not be sufficient to exclude that Alice can claim it back. 
+
 For this reason, this variant can be used only in a setting where, at deposit time, it is Bob the one to compute the ciphertext and request Alice to deposit it onchain along with the coins. The general one does not suffer this issue. 
 
 
@@ -58,7 +60,7 @@ Alice does the following.
 
 Run the command:
 ```bash
-node encrypt.js -k "$(cat mpkbn)" -e alice@oldcrypto.com   --cca2 --ethereum -bf hash -oc ciphertext  -t -h
+node encrypt.js -k "$(cat mpk)" -e alice@oldcrypto.com   --cca2 --ethereum -bf hash -oc ciphertext  -t -h
 ```
 This command will write into the file `ciphertext` a string of the form `32647a7236776532` and in the file `hash` a string containing an EC point.
 Moreover, the output will include a message like:
@@ -67,15 +69,18 @@ value D as ethereum tuple: [2003965190051973025758275777392474416347150343278658
 ```
 Let us call `CT` the first string with `0x` prepended (i.e. `0x32647a7236776532`) and `D` the latter string (i.e., `[20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272]`).
 
-Alice can invoke the method `MakeDepositFill` of the `Blik` contract with the so given parameters `D` and `CT` along with a transfer of `n` coins.
+Alice can invoke the method `MakeDepositFull` of the `Blik` contract with the so given parameters `D` and `CT` along with a transfer of `n` coins.
 The coins have been now deposited into the contract and it is not visibile to anyone, except to Bob, that the deposit is in favour of `bob@oldcrypto.com`.
 #### Verify that there is a payment in favour of yourself
 Bob can at any time get the values `CT` and `D` from the chain and store them resp. in the files `ciphertext` and `hash`.
+
 (Precisely, the file `hash` should contain the point `D` in the format expected by the `mcl` library. We are supposing that this has been already done. As TODO, the file `hash` input to the next command should contain a point in the ethereum tuple format and convert it internally.)
+
 Bob can now get his Google access token via the `LoI` web interface and use it to get a token for his email address from the `LoI` nodes and does the follwing. Suppose that Bob has stored the token into the file `google_tok`.
+
 Bob can run the following command:
 ```bash
-node decrypt.js -T "$(cat google_tok)" -k "$(cat mpkbn)" -e mrguizzo@gmail.com --ethereum --cca2 -c "$(cat ciphertext)" -bfi hash --addr "6A38Ea6a701c568545dCfcB03FcB875f56beddD4" -t -h -hm
+node decrypt.js -T "$(cat google_tok)" -k "$(cat mpk)" -e alice@oldcrypto.com --ethereum --cca2 -c "$(cat ciphertext)" -bfi hash --addr "6A38Ea6a701c568545dCfcB03FcB875f56beddD4" -t -h -hm
 ``` 
 In the latter command, the option `addr` takes as parameter the Bob's Ethereum address (without `0x` prepended) that we will henceforth denotes as `addr`.
 The command wil give an output like:
