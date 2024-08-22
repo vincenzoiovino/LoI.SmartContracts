@@ -595,6 +595,7 @@ function Finalize() {
     console.log("DEBUG: reconstructed token: " + token.getStr(16) + " for identity " + id);
     console.log("DEBUG: Verification of reconstructed token: success.");
     Token[provider + "." + email] = token.getStr(16);
+    document.getElementById("status2").style.color = "green";
     document.getElementById("status2").innerText = "Your crypto token is: [" + Token[provider + "." + email] + "]";
 }
 
