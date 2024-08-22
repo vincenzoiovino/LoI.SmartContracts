@@ -1,10 +1,10 @@
 # LoI.SmartContracts
 This repo contains examples of  Ethereum smart contracts to be used in combination with the [League of Identity](https://github.com/aragonzkresearch/leagueofidentity) (LoI) system.
 
-## Blik for web3
-[Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Polish-BLIK-for-web3) we described applications of `LoI` to a sort of BLIK system for web3 that we call `Blik3`. In `Blik3` Alice can make a deposit in favour of Bob by just specifying Bob's email address and nobody, except Bob, will be able to see that the deposit is in favour of him.
+## Anonymous Identity-Based Payments for web3
+[Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view) we described applications of `LoI` to an anonymous identity-based payment (`AnonIBP`) system. In `AnonIBP` Alice can make a deposit in favour of Bob by just specifying Bob's email address and nobody, except Bob, will be able to see that the deposit is in favour of him.
 Note that this on-chain payment system can be seen as a variant of the [Bank3 for Wallets](https://github.com/vincenzoiovino/bank3) system.
-We implemented the idea in the contract [`Blik.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/Blik.sol) that can be used in combination with `LoI` tools as follows.
+We implemented the idea in the contract [`AnonIBP.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/AnonIBP.sol) that can be used in combination with `LoI` tools as follows.
 
 The system has two variants, a basic one that can be used when Alice and Bob communicate at deposit time and a general one that does not need pre-communication. 
 
@@ -14,7 +14,7 @@ For this reason, this variant can be used only in a setting where, at deposit ti
 
 
 ### How to Test the basic and general variants
-We assume the reader familiar with the basic `LoI` commands described [here](https://github.com/aragonzkresearch/leagueofidentity) and we assume that the contract `Blik.sol` has been deployed to Ethereum.
+We assume the reader familiar with the basic `LoI` commands described [here](https://github.com/aragonzkresearch/leagueofidentity) and we assume that the contract `AnonIBP.sol` has been deployed to Ethereum.
 
 Precisely, recall that when you compute the master public key with the command:
 ```bash
@@ -26,7 +26,7 @@ reconstructed master public key: 1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd
 reconstructed master public key as Ethereum tuple: [[13706502950207910343706560538280652811815673551122904553485492739850509730698,16073960482686030108142259199455609210079009765551608569343005038231348551782],[20745873763960892318317663603992660951953361594491582428518987779361705649316,19328995967969664651933314377729245708471534526295335040608300242158949206332]]
 ```
 
-In that case, we suppose that the file `mpk` contains the first string (i.e., `1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd7022aa39c80b66fa066 1e4d9b127927dfc64355a53b75d6b03d92eedf5bd9b660f76d085b236c63c38a 2abbd2f34f5fbb09e6d7474a4037d0e300b9eb00df83db94c5e521fffc43893c 2dddbf99aaabe6352a17aba4a7bbd5a8eb2eb40d25f95ee6f9b10e2cf8c564a4`) and the `Blik.sol` contract must be initialized with the latter string (i.e., `[[13706502950207910343706560538280652811815673551122904553485492739850509730698,16073960482686030108142259199455609210079009765551608569343005038231348551782],[20745873763960892318317663603992660951953361594491582428518987779361705649316,19328995967969664651933314377729245708471534526295335040608300242158949206332]]`). 
+In that case, we suppose that the file `mpk` contains the first string (i.e., `1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd7022aa39c80b66fa066 1e4d9b127927dfc64355a53b75d6b03d92eedf5bd9b660f76d085b236c63c38a 2abbd2f34f5fbb09e6d7474a4037d0e300b9eb00df83db94c5e521fffc43893c 2dddbf99aaabe6352a17aba4a7bbd5a8eb2eb40d25f95ee6f9b10e2cf8c564a4`) and the `AnonIBP.sol` contract must be initialized with the latter string (i.e., `[[13706502950207910343706560538280652811815673551122904553485492739850509730698,16073960482686030108142259199455609210079009765551608569343005038231348551782],[20745873763960892318317663603992660951953361594491582428518987779361705649316,19328995967969664651933314377729245708471534526295335040608300242158949206332]]`). 
 
 #### Make a deposit in the basic variant
 Suppose Alice wants to make a deposit of `n` coins in favour of Bob who owns the email address `bob@oldcrypto.com`. We suppose that `oldcrypto.com` is a Google Business domain.
@@ -34,12 +34,12 @@ Alice does the following.
 
 Run the command:
 ```bash
-node encrypt -k "$(cat mpk)"  -e bob@oldcrypto.com -oc ciphertext --ethereum -t -h -b hash
+node encrypt -k "$(cat mpk)"  -e bob@oldcrypto.com -oc ciphertext --ethereum -t -h -p hash
 ```
 This command will write into the file `ciphertext` a string of the form `32647a7236776532` and in the file `hash` a string of the form `266f787b7a631888c2b97dd64b910cc9d4e5bf5f93fd7c90fee73f45bff0c0e2`.
 Let us call `CT` the first string (with `0x` prepended) and `h` the second string (with `0x` prepended).
 
-Alice can invoke the method `MakeDeposit` of the `Blik` contract with the so given parameters `h` and `CT` along with a transfer of `n` coins.
+Alice can invoke the method `MakeDeposit` of the `AnonIBP` contract with the so given parameters `h` and `CT` along with a transfer of `n` coins.
 The coins have been now deposited into the contract and it is not visibile to anyone, except to Bob, that the deposit is in favour of `bob@oldcrypto.com`.
 
 #### Make a withdrawal in the basic variant
@@ -51,7 +51,7 @@ Run the command:
 node decrypt -k "$(cat mpk)" -T "$(cat google_tok)"  -e bob@oldcrypto.com -c "$(cat ciphertext)"  --ethereum -t -h -hm
 ```
 This will output an hex string of the form `fd5daac9cd0e8b4e1f80d34c8ff90b35cc5450eaf6422168b3f50402da88f865`. Let `x` be the previous string with `0x` prepended.
-Bob can now invoke the method `MakeWithdrawal` of `Blik.sol` with input `h` and `x`. This will transfer the `n` coins from the contract to Bob.
+Bob can now invoke the method `MakeWithdrawal` of `AnonIBP.sol` with input `h` and `x`. This will transfer the `n` coins from the contract to Bob.
 
 
 #### Make a deposit in the general variant
@@ -60,16 +60,16 @@ Alice does the following.
 
 Run the command:
 ```bash
-node encrypt.js -k "$(cat mpk)" -e alice@oldcrypto.com   --cca2 --ethereum -bf hash -oc ciphertext  -t -h
+node encrypt.js -k "$(cat mpk)" -e alice@oldcrypto.com   --cca2 --ethereum -pf hash -oc ciphertext  -t -h
 ```
 This command will write into the file `ciphertext` a string of the form `32647a7236776532` and in the file `hash` a string containing an EC point.
 Moreover, the output will include a message like:
 ```bash
 value D as ethereum tuple: [20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272]
 ```
-Let us call `CT` the first string with `0x` prepended (i.e. `0x32647a7236776532`) and `D` the latter string (i.e., `[20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272]`).
+Let us call `CT` the first string with `0x` prepended (i.e. `0x32647a7236776532`) and `D` the latter string (i.e., `[20039651900519730257582757773924744163471503432786585826868686284353366380540,5916035560252728744096875982989936654058849764497868132090780995319525482272]`) of which the first part is the `D.X` and the latter is `D.Y`.
 
-Alice can invoke the method `MakeDepositFull` of the `Blik` contract with the so given parameters `D` and `CT` along with a transfer of `n` coins.
+Alice can invoke the method `MakeDepositFull` of the `AnonIBP` contract with the so given parameters `D.X`, `D.Y`, and `CT` along with a transfer of `n` coins.
 The coins have been now deposited into the contract and it is not visibile to anyone, except to Bob, that the deposit is in favour of `bob@oldcrypto.com`.
 #### Verify that there is a payment in favour of yourself
 Bob can at any time get the values `CT` and `D` from the chain and store them resp. in the files `ciphertext` and `hash`.
@@ -80,7 +80,7 @@ Bob can now get his Google access token via the `LoI` web interface and use it t
 
 Bob can run the following command:
 ```bash
-node decrypt.js -T "$(cat google_tok)" -k "$(cat mpk)" -e alice@oldcrypto.com --ethereum --cca2 -c "$(cat ciphertext)" -bfi hash --addr "6A38Ea6a701c568545dCfcB03FcB875f56beddD4" -t -h -hm
+node decrypt.js -T "$(cat google_tok)" -k "$(cat mpk)" -e alice@oldcrypto.com --ethereum --cca2 -c "$(cat ciphertext)" -pfi hash --addr "6A38Ea6a701c568545dCfcB03FcB875f56beddD4" -t -h -hm
 ``` 
 In the latter command, the option `addr` takes as parameter the Bob's Ethereum address (without `0x` prepended).
 The command wil give an output like:
@@ -103,9 +103,9 @@ The field ``success`` in the JSON string indicates that the deposit is withdrawa
 
 #### Make a withdrawal in the general variant
 After that Bob has verified above that a certain deposit is in favour of himself, Bob can decide to withdraw by 
-invoking the method `MakeWithdrawalFull` of `Blik.sol` with input the above string `pi`. This will transfer the `n` coins from the contract to Bob.
+invoking the method `MakeWithdrawalFull` of `AnonIBP.sol` with input the argument `pi_as_ethereum_tuple` (precisely, it must be passed as a list) . This will transfer the `n` coins from the contract to Bob.
 #### Deposits in favour of phone numbers
-The contract and the commands can be also used to make deposits in favour of phone numbers as in the original Polish BLIK system.
+The contract and the commands can be also used to make deposits in favour of phone numbers as in the Polish BLIK system.
 Bob just needs to have (or create) a Google account and to verify his phone number in that Google account.
 Then, as explained [here](https://github.com/aragonzkresearch/leagueofidentity#phone-number-encryption-phencryption), Bob can get a token for his phone number. 
 Alice can make the deposit specifying the Bob's phone number instead of his email address.

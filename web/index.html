@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for HTML5 for Linux version 5.2.0">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content=
+  "width=device-width, initial-scale=1.0">
+  <title>AZKR - Anonymous Identity-based Crypto Payments - Demo</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <link rel="stylesheet" href="./styles.css">
+  <main>
+    <div class="terminal-container">
+      <div class="terminal-header">
+        <div class="buttons">
+          <div id="minus" class="btn red">
+            -
+          </div>
+          <div id="instructions" class="btn yellow">
+            ?
+          </div>
+          <center>
+            <p style="color: white">Anonymous Identity-based Crypto Payments (Demo)</p>
+          </center>
+        </div>
+      </div>
+      <div class="terminal-content">
+        <p id="status1" class="status" style="color: red">
+        disconnected</p>
+        <p id="status2" style="color: white"></p>
+        <p id="status3"></p>
+        <p id="status4"></p>
+        <p id="status5"></p>
+        <p id="last"></p>
+        <p id="copyright">&copy;AZKR, 2024</p>
+      </div>
+    </div>
+<div class="secondcontainer">
+      <div class="select">
+        <select id="menu">
+          <option value="google">
+            Provider: Gmail
+          </option>
+          <option value="facebook">
+            Provider: Facebook
+          </option>
+		</select>
+      </div>
+      </div>
+<div class="secondcontainer">
+          <div class="inputcontainer">
+            <input
+              id="emailinput"
+              class="myinput2"
+              placeholder="email or phone no (e.g., alice@gmail.com or +393346873291)..."
+            />
+          </div>
+          <div class="inputcontainer">
+            <input
+              id="nCoinsinput"
+              class="myinput"
+              placeholder="amount Ether (e.g., 0.001)..."
+            />
+          </div>
+          <div class="buttoncontainer">
+            <button type="button" id="depositButton" class="button64">Deposit</button>
+          </div>
+
+    <div class="secondcontainer">
+      <div class="inputcontainer">
+            <input
+              id="idinput"
+              class="myinput3"
+              placeholder="id of the deposit you want to check (e.g., 3)..."
+            />
+      </div>
+          <div class="buttoncontainer">
+<button id="withdrawButton" class="button49">Search for Deposits</button>
+    </div>
+    </div>
+      <div class="inputcontainer">
+          <div class="buttoncontainer">
+        <button id="logout" class="button49">Logout</button> 
+    </div>
+    </div>
+    <script src="hello.all.js">
+    </script> 
+    <script type="module" src="./main.js">
+    </script> 
+    <script async src="./noble-hashes.js">
+    </script> 
+    <script async src="./noble-curves.js">
+    </script> 
+    <script src=
+    "https://cdnjs.cloudflare.com/ajax/libs/web3/4.0.1-alpha.5/web3.min.js"
+    integrity=
+    "sha512-NfffVWpEqu1nq+658gzlJQilRBOvjs+PhEKSjT9gkQXRy9OfxI2TOXr33zS7MgGyTpBa5qtC6mKJkQGd9dN/rw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+    </script> 
+    <script src=
+    "https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"
+    integrity=
+    "sha512-FDcVY+g7vc5CXANbrTSg1K5qLyriCsGDYCE02Li1tXEYdNQPvLPHNE+rT2Mjei8N7fZbe0WLhw27j2SrGRpdMg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+    </script> 
+<script src="https://herumi.github.io/mcl-wasm/browser/mcl.js"></script>
+    <script src=
+    "https://cdnjs.cloudflare.com/ajax/libs/Base64URL-ArrayBuffer/1.1.0/main.umd.js"
+    integrity=
+    "sha512-6JHw+dAGW5NLa6LlFS3dXFIgi6RrhBKhr901plO7he92ZvpsvQoO8Sw+lyGP2oNCcyXbsNwSQpJLDTOMoFRrHw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+    </script> 
+    <script src=
+    "https://unpkg.com/sweetalert/dist/sweetalert.min.js">
+    </script>
+    <footer data-role="footer"></footer>
+  </main>
+</body>
+</html>
