@@ -110,7 +110,14 @@ Bob just needs to have (or create) a Google account and to verify his phone numb
 Then, as explained [here](https://github.com/aragonzkresearch/leagueofidentity#phone-number-encryption-phencryption), Bob can get a token for his phone number. 
 Alice can make the deposit specifying the Bob's phone number instead of his email address.
 
-
+### Web Implementation
+Under the folder `web` you can find a web porting of the AnonIBP system. 
+This requires you run the command:
+``bash
+node server.js
+```
+which is needed to use the tinyurl service.
+Edit the file `main.js` with your parameters, the ones therein are only to be used as a reference.
 ## DAOs of Google Business domains
 As an example we provide a template of a DAO whose members can be the owners of emails of the form `user@domain.com` where `domain.com` is a parameter of the DAO.
 Only users with such emails can cast votes for proposals. Moreover, the content of a proposal is encrypted: only owners of emails that end in `@domain.com` can read the proposal.
