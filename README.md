@@ -113,7 +113,7 @@ Alice can make the deposit specifying the Bob's phone number instead of his emai
 ### Web Implementation
 Under the folder `web` you can find a web porting of the AnonIBP system. 
 This requires you run the command:
-``bash
+```bash
 node server.js
 ```
 which is needed to use the tinyurl service.
