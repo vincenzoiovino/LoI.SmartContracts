@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 // Copyright Vincenzo Iovino, 2024
 
+// initialize the contract with:
+// [[17650401953877851439635577206110766953856761406923475418003307457561889540315,21200720758627169108385381836933178062103968834651067635052438190446348782562],[19663398795984464822343332592454950952846592629461984989829477392159714729078,21167609696476223494515294740194964327788425825089244977948745836321546859634]]
+
 pragma solidity >=0.7.0 <0.9.0;
 import {BN254} from "./libs/BN254.sol";
 import {LoI} from "./libs/LoI.sol";
@@ -12,7 +15,7 @@ contract AnonIBP {
         MPK.PointG2 = mpk;
     }
 
-    struct Proof { // not used - for reference only
+    struct Proof {
         BN254.G1 D;
         BN254.G1 E;
         BN254.G1 tokenprime;
@@ -140,17 +143,7 @@ contract AnonIBP {
     ) internal {
         BN254.G1 memory p0;
 
-        bytes memory dot = bytes(".");
-        bytes memory message = abi.encodePacked(
-            Ex,
-            dot,
-            pi_Ax,
-            dot,
-            msg.sender
-        );
-
-        uint256 e = uint256(sha256(message));
-
+        uint256 e = uint256(sha256(abi.encodePacked(Ex, pi_Ax, msg.sender)));
         BN254.G1 memory tmp;
 
         tmp.X = Ex;
