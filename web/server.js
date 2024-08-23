@@ -2,7 +2,6 @@ var PORT = 5001;
 const commander = require('commander');
 const express = require('express');
 const nocache = require('nocache');
-const http = require('http');
 const https = require('https');
 const cors = require('cors');
 const fs = require('fs');
