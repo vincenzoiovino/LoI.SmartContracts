@@ -17,21 +17,25 @@ commander
 const options = commander.opts();
 
 
+
 var httpsServer;
+const app = express();
 
 if (options.ssl) {
-const privateKey  = fs.readFileSync(options.cer, 'utf8');
-const certificate = fs.readFileSync(options.key, 'utf8');
+    const privateKey = fs.readFileSync(options.key, 'utf8');
+    const certificate = fs.readFileSync(options.cer, 'utf8');
 
-const credentials = {key: privateKey, cert: certificate};
-httpserver = https.createServer(credentials, app);
+    const credentials = {
+        key: privateKey,
+        cert: certificate
+    };
+    httpserver = https.createServer(credentials, app);
 
 
 }
-const app = express();
 app.use(nocache());
 app.use(cors());
-if (options.port) PORT= options.port;
+if (options.port) PORT = options.port;
 // start the express web server listening on PORT
 app.listen(PORT, () => {
     console.log('listening on ' + PORT);
@@ -42,4 +46,3 @@ app.get('/*', async (req, res) => {
     res.send(req.params).status(200);
 
 });
-
