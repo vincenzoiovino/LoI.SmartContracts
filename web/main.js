@@ -508,7 +508,7 @@ function hexToBytes(hex) {
 async function get_token_main(threshold, access_token) {
     for (let i = 0; i < threshold; i++) {
         Q[i] = BigInt(Indices[i]);
-       await fetch(Addresses[i] + "/" + provider + "/" + group + "/" + date_path + "/" + access_token + "/" + fetch_friends + "/" + fetch_anon + "/" + fetch_ethereum).then(async function(response) {
+        await fetch(Addresses[i] + "/" + provider + "/" + group + "/" + date_path + "/" + access_token + "/" + fetch_friends + "/" + fetch_anon + "/" + fetch_ethereum).then(async function(response) {
             await serverReceipt(i, response);
         }).catch((err) => {
             console.error(err.message);
@@ -525,7 +525,7 @@ async function serverReceipt(i, response) {
         return;
 
     } else {
-      await  response.text().then(async function(text) {
+        await response.text().then(async function(text) {
             console.log("DEBUG: Value received by server " + Indices[i] + " (" + Addresses[i] + "): " + text);
             if (!email) email = String.fromCharCode(...hexToBytes(text.split('..')[2]));
             else if (String.fromCharCode(...hexToBytes(text.split('..')[2])) != email) throw ("Inconsistent values received from different servers");
@@ -545,7 +545,7 @@ async function serverReceipt(i, response) {
             t--;
             if (t == 0) {
                 Provider = undefined;
-               await Finalize();
+                await Finalize();
             }
         }).catch(function(err) {
             console.error(err);
