@@ -118,6 +118,8 @@ node server.js
 ```
 which is needed to use the tinyurl service.
 Edit the file `main.js` with your parameters, the ones therein are only to be used as a reference.
+
+*Note*: for simplicity, in our web implementation the user needs Metamask wallet installed in order to check for deposit in favour of him/her. This is because we use the injected Metamask provider to retrieve data on-chain. The implementation can be easily changed to not need Metamask for this functionality.
 ## DAOs of Google Business domains
 As an example we provide a template of a DAO whose members can be the owners of emails of the form `user@domain.com` where `domain.com` is a parameter of the DAO.
 Only users with such emails can cast votes for proposals. Moreover, the content of a proposal is encrypted: only owners of emails that end in `@domain.com` can read the proposal.
