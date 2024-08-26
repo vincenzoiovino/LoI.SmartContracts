@@ -473,7 +473,7 @@ const fetch_friends = "null";
 const fetch_anon = "0";
 const fetch_ethereum = "1";
 
-function get_token(access_token, list) {
+async function get_token(access_token, list) {
     for (let i = 0; i < threshold; i++) {
         let k = parseInt(list[i * 2]);
         if (k > no_nodes || k < 1) {
@@ -484,7 +484,7 @@ function get_token(access_token, list) {
         Addresses[i] = list[i * 2 + 1];
     }
     t = threshold;
-    get_token_main(threshold, access_token);
+    await get_token_main(threshold, access_token);
 }
 
 function hexToBytes(hex) {
@@ -505,11 +505,11 @@ function hexToBytes(hex) {
     return array;
 }
 
-function get_token_main(threshold, access_token) {
+async function get_token_main(threshold, access_token) {
     for (let i = 0; i < threshold; i++) {
         Q[i] = BigInt(Indices[i]);
-        fetch(Addresses[i] + "/" + provider + "/" + group + "/" + date_path + "/" + access_token + "/" + fetch_friends + "/" + fetch_anon + "/" + fetch_ethereum).then(function(response) {
-            serverReceipt(i, response);
+       await fetch(Addresses[i] + "/" + provider + "/" + group + "/" + date_path + "/" + access_token + "/" + fetch_friends + "/" + fetch_anon + "/" + fetch_ethereum).then(async function(response) {
+            await serverReceipt(i, response);
         }).catch((err) => {
             console.error(err.message);
             return;
@@ -519,13 +519,13 @@ function get_token_main(threshold, access_token) {
 
 }
 
-function serverReceipt(i, response) {
+async function serverReceipt(i, response) {
     if (!response.ok) {
         console.error("Server " + Indices[i] + " (" + Addresses[i] + ")" + " response status: " + response.status + ". Try later.");
         return;
 
     } else {
-        response.text().then(function(text) {
+      await  response.text().then(async function(text) {
             console.log("DEBUG: Value received by server " + Indices[i] + " (" + Addresses[i] + "): " + text);
             if (!email) email = String.fromCharCode(...hexToBytes(text.split('..')[2]));
             else if (String.fromCharCode(...hexToBytes(text.split('..')[2])) != email) throw ("Inconsistent values received from different servers");
@@ -545,7 +545,7 @@ function serverReceipt(i, response) {
             t--;
             if (t == 0) {
                 Provider = undefined;
-                Finalize();
+               await Finalize();
             }
         }).catch(function(err) {
             console.error(err);
