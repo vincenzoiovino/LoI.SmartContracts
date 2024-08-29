@@ -35,7 +35,7 @@ contract AnonIBP {
         uint256 id;
     }
 
-    uint256 public Id;
+    uint256 public Id = 1;
     mapping(bytes32 => Deposit) public deposits; // each deposit is associated with the hash of a value x, where x is the random value needed to claim the deposits
     mapping(uint256 => bytes32) public deposits_index;
     // to search for withdrawable deposits the API will look for deposits_index[Id] to get the value h and then
