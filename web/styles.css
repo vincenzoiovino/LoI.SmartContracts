@@ -68,7 +68,7 @@
   padding: 15px;
   min-width: 28%;
   height: 15px;
-  width: 380px;
+  width: 340px;
 }
 .myinput3 {
   background-color: rgb(253, 232, 255);
@@ -212,6 +212,7 @@
   font-family: 'Source Code Pro', monospace;
   font-size: 0.8rem;
   line-height: 1;
+  margin-top: 15px;
 }
 
 .terminal-content p{
