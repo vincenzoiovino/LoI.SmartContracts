@@ -32,11 +32,16 @@ const MMSDK = new MetaMaskSDK.MetaMaskSDK({
     // Other options.
 });
 
-const isMobile = navigator.userAgentData.mobile;
+var isMobile;
+try {
+    isMobile = navigator.userAgentData.mobile;
+} catch (err) {
+    isMobile = null;
+}
 web3 = new Web3(new Web3.providers.HttpProvider(KEY, ), );
 async function Connect() {
     if (ethereum !== undefined) return;
-    if (!isMobile) {
+    if (!isMobile || isMobile == undefined) {
         ethereum = window.ethereum;
         wallet = new Web3(ethereum);
     } else {
