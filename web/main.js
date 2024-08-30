@@ -33,7 +33,7 @@ const MMSDK = new MetaMaskSDK.MetaMaskSDK({
 });
 
 const isMobile = navigator.userAgentData.mobile;
-web3 = new Web3(new Web3.providers.HttpProvider(KEY,),);
+web3 = new Web3(new Web3.providers.HttpProvider(KEY, ), );
 async function Connect() {
     if (ethereum !== undefined) return;
     if (!isMobile) {
@@ -50,7 +50,7 @@ async function Connect() {
             //await window.ethereum.enable();
         } catch (error) {
             document.getElementById("status1").style.color = "red";
-            document.getElementById("status1").innerText = "Failed to connect to Metamask: "+ error;
+            document.getElementById("status1").innerText = "Failed to connect to Metamask: " + error;
             console.error("Failed to connect to MetaMask:", error);
 
             return;
@@ -723,7 +723,9 @@ function hashToCurve(id) {
 
 async function checkMetaMaskAvailability() {
     await Connect();
-    await ethereum.request({ method: 'eth_requestAccounts' });
+    await ethereum.request({
+        method: 'eth_requestAccounts'
+    });
     if (ethereum !== undefined) {
         try {
             // Request access to MetaMask accounts
@@ -771,7 +773,7 @@ document.getElementById("instructions").addEventListener("click", async () => {
     status4.innerText = "";
     status5.innerText = "";
     status2.innerHTML = "<h3>💸Deposit💸</h3>Choose a provider (Gmail or Facebook), input the quantity of ether (e.g. 0.0003) and the email or phone number of the receiver in favour of whom you want to make the deposit and click on \"Deposit\".<br>You need to sign the transaction with your wallet and after the transaction is confirmed you will receiver an id number." +
-"<h3>🏧🔍Search for a deposit and withdraw🏧🔍</h3>To withdraw a deposit choose your provider (Gmail or Facebook), input an id number in the corresponding box and click the \"Search for Deposits\" button.<br>You will be asked to log into your Gmail or Facebook account and then you will be told whether there is a deposit corresponding to your profile and id number. In that case you can choose to perform a withdrawal using your wallet.<h3>📞Phone numbers📞</h3>If the deposit has been done for your phone number, in order to perform a withdrawal, you need to link your phone number to your Gmail profile and make the phone number public. Then you can withdraw as explained above choosing Gmail as provider.<h4>📌Note on this demo📌</h4>1. The mobile version is unstable yet!<br>2. This demo is connected to a free developer Google account and as such if you want to test it your email address needs to be manually inserted into the list of test users. Contact ✉️vincenzo.iovino@azkr.org✉️<br>For more info check out the documentation at " + "<a href=\"https://github.com/vincenzoiovino/LoI.SmartContracts/\">Github</a>";
+        "<h3>🏧🔍Search for a deposit and withdraw🏧🔍</h3>To withdraw a deposit choose your provider (Gmail or Facebook), input an id number in the corresponding box and click the \"Search for Deposits\" button.<br>You will be asked to log into your Gmail or Facebook account and then you will be told whether there is a deposit corresponding to your profile and id number. In that case you can choose to perform a withdrawal using your wallet. The withdrawal will be carried out in favour of the Eth address specified in the corresponding field (it defaults to the address selected in your Wallet if empty).<h3>📞Phone numbers📞</h3>If the deposit has been done for your phone number, in order to perform a withdrawal, you need to link your phone number to your Gmail profile and make the phone number public. Then you can withdraw as explained above choosing Gmail as provider.<h4>📌Note on this demo📌</h4>1. The mobile version is unstable yet!<br>2. This demo is connected to a free developer Google account and as such if you want to test it your email address needs to be manually inserted into the list of test users. Contact ✉️vincenzo.iovino@azkr.org✉️<br>For more info check out the documentation at " + "<a href=\"https://github.com/vincenzoiovino/LoI.SmartContracts/\">Github</a>";
 
 });
 
@@ -816,8 +818,8 @@ document.getElementById("depositButton").addEventListener("click", async () => {
     document.getElementById("status5").innerText = "Wait....";
 
 
-     //await ethereum.request({ method: 'eth_requestAccounts' }).then(async function () {
-     await contract.methods.MakeDepositFull(encodedDx, encodedDy, encodedCT).send({
+    //await ethereum.request({ method: 'eth_requestAccounts' }).then(async function () {
+    await contract.methods.MakeDepositFull(encodedDx, encodedDy, encodedCT).send({
             from: from,
             value: amountWei
         }).on("confirmation", async function(confirmationNumber, receipt) {
@@ -827,7 +829,9 @@ document.getElementById("depositButton").addEventListener("click", async () => {
             clearInterval(waitdepositinterval);
             clearInterval(waitwithdrawalinterval);
             const Id = await contract.methods.getIdFromDx(encodedDx).call();
-            document.getElementById("status5").innerText = "Id of deposit: " + Id + "\nStore it for future use";
+            if (Id + "" == "0")
+                document.getElementById("status5").innerText = "Unable to retrieve id of deposit. Check out latest contract IDs.";
+            else document.getElementById("status5").innerText = "Id of deposit: " + Id + "\nStore it for future use";
             document.getElementById("status5").style.color = "green";
             document.getElementById("status4").innerHTML = "Deposit in favour of " + email + " carried out successfully. Check out transaction " + "<a href=\"https://" + CHAIN + ".etherscan.io/tx/" + txn + "\"target=\"_blank\">here" + "</a>";
             document.getElementById("status4").style.color = "green";
@@ -839,7 +843,7 @@ document.getElementById("depositButton").addEventListener("click", async () => {
             document.getElementById("status2").style.color = "white";
             waitdepositinterval = setInterval(setWaitDeposit, 2700);
         });
-        //});
+    //});
     document.getElementById("status5").innerText = "";
 
 });
@@ -881,7 +885,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
 
     var access_token, _network;
     if (network === "google.phone") _network = "google";
-	else _network = network;
+    else _network = network;
     await hello(_network).login(options).then(async function() {
         //var email;
         console.log(hello(_network).getAuthResponse());
@@ -954,10 +958,11 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                 icon: "warning",
             })) {
             // withdraw
-		// TODO: remove the need for double decryptAndVerify. The first one should be used only to perform a verification without computing the proof
+            // TODO: remove the need for double decryptAndVerify. The first one should be used only to perform a verification without computing the proof
             const metaMaskAvailable = await checkMetaMaskAvailability();
             const accounts = await wallet.eth.getAccounts();
-            Addr = accounts[0];
+            Addr = document.getElementById("addrinput").value;
+            if (Addr == "") Addr = accounts[0];
             await decryptAndVerify(email);
             const contract = new wallet.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
             const encodedDx = wallet.eth.abi.encodeParameter('uint256', BigInt(D_EthereumX));
@@ -980,7 +985,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                     clearInterval(waitwithdrawalinterval);
                     document.getElementById("status5").innerText = "";
                     var txn = confirmationNumber.receipt.transactionHash;
-                    document.getElementById("status5").innerHTML = "Withdrawal of " + wallet.utils.fromWei(nCoins, "ether") + "ETH carried out successfully. Check out transaction " + "<a href=\"https://" + CHAIN + ".etherscan.io/tx/" + txn + "\"target=\"_blank\">here" + "</a>";
+                    document.getElementById("status5").innerHTML = "Withdrawal of " + wallet.utils.fromWei(nCoins, "ether") + "in favour of address " + Addr + "ETH carried out successfully. Check out transaction " + "<a href=\"https://" + CHAIN + ".etherscan.io/tx/" + txn + "\"target=\"_blank\">here" + "</a>";
                     document.getElementById("status5").style.color = "green";
                     document.getElementById("status4").innerText = "";
                     document.getElementById("status4").style.color = "green";
@@ -997,7 +1002,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                     document.getElementById("status5").innerText = "";
                     waitwithdrawalinterval = setInterval(setWaitWithdrawal, 2700);
                 });
-	    //});
+            //});
             document.getElementById("status5").innerText = "";
         }
         document.getElementById("status5").innerText = "";
