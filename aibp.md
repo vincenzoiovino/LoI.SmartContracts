@@ -1,0 +1,8 @@
+# AIBP Protocol description
+The sender Alice (who wants to deposits crypto assets in favour of the receiver Bob) can choose a random value $r\in Z_p$, compute an IBE ciphertext $CT$ for the Bob's identity $id$ and message $r$, compute $D=H(id)^r$, and deposits on-chain the values $CT$ and $D$.
+Bob can verify that a payment is withdrawable by him performing the following check: use his own token for the identity $id$ to decrypt $CT$ and get $r$ and check that $D=H(id)^r$. The check is carried out off-chain in e.g. Bob's browser. The property we want to ensure is that if this check passes then Bob should be convinced that the payment is withdrawable by him and only by him.
+
+In order to withdraw, Bob chooses a random value $s\in Z_p$, compute $E=D^s$, a non-interactive Schnorr's proof of knowledge $\pi$ of dlog of $E$ in base $D$ (i.e., knowledge of $s$), the re-randomized token $Token_{Bob}'=Token_{Bob}^{r\cdot s}=H(id)^{msk\cdot r\cdot s}$ and sends to the smart contract the values $E,\pi,Token_{Bob}'$. (Note that Bob knows $r$ since Bob can decrypt the IBE ciphertext $CT$ as above.)
+The smart contract verifies $\pi$ and checks that $e(Token_{Bob}',g_2)=e(E,MPK)$.
+As before, Bob needs to include the withdrawal address as part of the FS challenge of the proof $\pi$. The idea is that the security property we wish is satisfied due to the fact that if these checks pass then $Tok_{Bob}'$ is a correct re-randomized token, where the re-randomization is done with the values $r,s$ resp. corresponding to $CT$ and $\pi$ and thus Bob knows a valid token for identity $id$ and this is enough to conclude that the smart contract was invoked by the legitimate Bob.
+

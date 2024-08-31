@@ -3,14 +3,15 @@ This repo contains examples of  Ethereum smart contracts to be used in combinati
 
 ## Anonymous Identity-Based Payments for web3
 [Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view) we described applications of `LoI` to an anonymous identity-based payment (`AnonIBP`) system. In `AnonIBP` Alice can make a deposit in favour of Bob by just specifying Bob's email address and nobody, except Bob, will be able to see that the deposit is in favour of him.
-Note that this on-chain payment system can be seen as a variant of the [Bank3 for Wallets](https://github.com/vincenzoiovino/bank3) system.
+Note that this on-chain payment system can be seen as an identity-based variant of the [Bank3 for Wallets](https://github.com/vincenzoiovino/bank3) system.
 We implemented the idea in the contract [`AnonIBP.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/AnonIBP.sol) that can be used in combination with `LoI` tools as follows.
+
 
 The system has two variants, a basic one that can be used when Alice and Bob communicate at deposit time and a general one that does not need pre-communication. 
 
 Precisely, if the basic variant were used naively without pre-communication then Alice could perform an alleged deposit in favour of Bob but Alice could still know the witness that can be used to perform the withdrawal, that is even if Bob verifies that there is a deposit in favour of himself this would not be sufficient to exclude that Alice can claim it back. 
 
-For this reason, this variant can be used only in a setting where, at deposit time, it is Bob the one to compute the ciphertext and request Alice to deposit it onchain along with the coins. The general one does not suffer this issue. 
+For this reason, this variant can be used only in a setting where, at deposit time, it is Bob the one to compute the ciphertext and request Alice to deposit it onchain along with the coins. The general one does not suffer this issue and a description of its underlying cryptographic protocol can be found [here](./aibp.md).
 
 
 ### How to Test the basic and general variants
@@ -119,8 +120,6 @@ node server.js
 which is needed to use the tinyurl service.
 Edit the file `main.js` with your parameters, the ones therein are only to be used as a reference.
 
-*Note*: in our implementation, the withdrawal will be in favour of the selected address in the user's Wallet. In a real implementation the user should have an option to withdraw in favour of any other adddress not controlled by him. The implementation can be easily accomodated to allow that.
- 
 ## DAOs of Google Business domains
 As an example we provide a template of a DAO whose members can be the owners of emails of the form `user@domain.com` where `domain.com` is a parameter of the DAO.
 Only users with such emails can cast votes for proposals. Moreover, the content of a proposal is encrypted: only owners of emails that end in `@domain.com` can read the proposal.
