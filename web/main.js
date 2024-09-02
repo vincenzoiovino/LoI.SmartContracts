@@ -51,7 +51,7 @@ async function Connect() {
             //await _ethereum.request({ method: 'eth_requestAccounts' });
             ethereum = _ethereum;
             wallet = new Web3(ethereum);
-            web3 = new Web3(new Web3.providers.HttpProvider(KEY));
+            //web3 = new Web3(new Web3.providers.HttpProvider(KEY));
             //await window.ethereum.enable();
         } catch (error) {
             document.getElementById("status1").style.color = "red";
@@ -770,7 +770,7 @@ async function checkMetaMaskAvailability() {
 
 document.getElementById("instructions").addEventListener("click", async () => {
     document.getElementById("status2").style.color = "white";
-    document.getElementById("status3").style.color = "white";
+    document.getElementById("status3").style.color = "yellow";
     document.getElementById("status4").style.color = "white";
     document.getElementById("status5").style.color = "white";
     status2.innerText = "";
@@ -779,6 +779,11 @@ document.getElementById("instructions").addEventListener("click", async () => {
     status5.innerText = "";
     status2.innerHTML = "<h3>💸Deposit💸</h3>Choose a provider (Gmail or Facebook), input the quantity of ether (e.g. 0.0003) and the email or phone number of the receiver in favour of whom you want to make the deposit and click on \"Deposit\".<br>You need to sign the transaction with your wallet and after the transaction is confirmed you will receiver an id number." +
         "<h3>🏧🔍Search for a deposit and withdraw🏧🔍</h3>To withdraw a deposit choose your provider (Gmail or Facebook), input an id number in the corresponding box and click the \"Search for Deposits\" button.<br>You will be asked to log into your Gmail or Facebook account and then you will be told whether there is a deposit corresponding to your profile and id number. In that case you can choose to perform a withdrawal using your wallet. The withdrawal will be carried out in favour of the Eth address specified in the corresponding field (it defaults to the address selected in your Wallet if empty).<h3>📞Phone numbers📞</h3>If the deposit has been done for your phone number, in order to perform a withdrawal, you need to link your phone number to your Gmail profile and make the phone number public. Then you can withdraw as explained above choosing Gmail as provider.<h4>📌Note on this demo📌</h4>1. The mobile version is unstable yet!<br>2. This demo is connected to a free developer Google account and as such if you want to test it your email address needs to be manually inserted into the list of test users. Contact ✉️vincenzo.iovino@azkr.org✉️<br>For more info check out the documentation at " + "<a href=\"https://github.com/vincenzoiovino/LoI.SmartContracts/\">Github</a>";
+
+    const contract = new web3.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
+    const Id = await contract.methods.getId().call();
+    status3.innerText = "Contract at address: " + contractAnonIBPAddress + "\n" + "Latest id assigned to a deposit: " + Id + "\nContract balance: " + web3.utils.fromWei(await web3.eth.getBalance(contractAnonIBPAddress), "ether") + "ETH";
+
 
 });
 
