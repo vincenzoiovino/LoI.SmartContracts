@@ -1029,9 +1029,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                     waitwithdrawalinterval = setInterval(setWaitWithdrawal, 2700);
                 });
             //});
-            document.getElementById("status5").innerText = "";
         }
-        document.getElementById("status5").innerText = "";
 
     });
 
