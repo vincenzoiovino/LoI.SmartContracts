@@ -1,6 +1,7 @@
 var web3, ethereum, wallet;
 const CHAIN_ID = 11155111; // Goerli = 5, Sepolia = 11155111
 const infuraID = ""; // Your InfuraID
+
 const KEY = "https://sepolia.infura.io/v3/" + infuraID; // infura api key - IN A REAL IMPLEMENTATION THIS SHOULD NOT BE PUBLIC AND SHOULD BE HIDDEN IN THE BACKEND
 
 /*
@@ -782,7 +783,7 @@ document.getElementById("instructions").addEventListener("click", async () => {
 
     const contract = new web3.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
     const Id = await contract.methods.getId().call();
-    status3.innerText = "Contract at address: " + contractAnonIBPAddress + "\n" + "Latest id assigned to a deposit: " + Id + "\nContract balance: " + web3.utils.fromWei(await web3.eth.getBalance(contractAnonIBPAddress), "ether") + "ETH";
+    status3.innerText = "Contract at address: " + contractAnonIBPAddress + "\n" + "Latest id assigned to a deposit: " + (Id - 1) + "\nContract balance: " + web3.utils.fromWei(await web3.eth.getBalance(contractAnonIBPAddress), "ether") + "ETH";
 
 
 });
@@ -1166,7 +1167,7 @@ async function decryptAndVerify(email) { // it expects that the global variable 
     const t2 = mcl.pairing(token, G2Base);
     if (!t1.isEqual(t2)) {
         console.error("Verification of token: failure.");
-        process.exit(1);
+        return "0";
     }
     console.log("DEBUG: Verification of token: success.");
     const g_id = mcl.pairing(token, A);
