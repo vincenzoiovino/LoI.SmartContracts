@@ -746,7 +746,7 @@ async function checkMetaMaskAvailability() {
                 document.getElementById("status1").style.color = "red";
                 document.getElementById("status1").innerText = "Pls connect to Sepolia Network";
                 Metamask = "";
-                return;
+                return false;
             }
             document.getElementById("status1").innerText = "Connected to MetaMask (" + CHAIN + " Testnet)";
             Metamask = "Connected to MetaMask (" + CHAIN + " Testnet)";
@@ -813,6 +813,12 @@ document.getElementById("depositButton").addEventListener("click", async () => {
     const email = document.getElementById("emailinput").value;
     await deposit(email);
     const metaMaskAvailable = await checkMetaMaskAvailability();
+    if (metaMaskAvailable === false) {
+        await swal("Metamask is not available or you are not connected to Sepolia network. Pls check your Metamask Wallet before using it.", {
+            icon: "error",
+        });
+        return;
+    }
     document.getElementById("status5").innerText = "Wait.";
     const accounts = await wallet.eth.getAccounts();
     const from = accounts[0];
@@ -847,6 +853,7 @@ document.getElementById("depositButton").addEventListener("click", async () => {
             document.getElementById("status4").innerHTML = "Deposit in favour of " + email + " carried out successfully. Check out transaction " + "<a href=\"https://" + CHAIN + ".etherscan.io/tx/" + txn + "\"target=\"_blank\">here" + "</a>";
             document.getElementById("status4").style.color = "green";
             document.getElementById("status2").innerText = "";
+            document.getElementById("status3").innerText = "";
 
 
         })
@@ -971,6 +978,12 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
             // withdraw
             // TODO: remove the need for double decryptAndVerify. The first one should be used only to perform a verification without computing the proof
             const metaMaskAvailable = await checkMetaMaskAvailability();
+            if (metaMaskAvailable === false) {
+                await swal("Metamask is not available or you are not connected to Sepolia network. Pls check your Metamask Wallet before using it.", {
+                    icon: "error",
+                });
+                return;
+            }
             const accounts = await wallet.eth.getAccounts();
             Addr = document.getElementById("addrinput").value;
             if (Addr == "") Addr = accounts[0];
@@ -1001,6 +1014,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                     document.getElementById("status4").innerText = "";
                     document.getElementById("status4").style.color = "green";
                     document.getElementById("status2").innerText = "";
+                    document.getElementById("status3").innerText = "";
 
 
                 })
@@ -1011,6 +1025,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                     document.getElementById("status5").style.color = "white";
                     document.getElementById("status4").innerText = "";
                     document.getElementById("status5").innerText = "";
+                    document.getElementById("status3").innerText = "";
                     waitwithdrawalinterval = setInterval(setWaitWithdrawal, 2700);
                 });
             //});
