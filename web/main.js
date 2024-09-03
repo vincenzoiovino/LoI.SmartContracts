@@ -1009,7 +1009,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                     clearInterval(waitwithdrawalinterval);
                     document.getElementById("status5").innerText = "";
                     var txn = confirmationNumber.receipt.transactionHash;
-                    document.getElementById("status5").innerHTML = "Withdrawal of " + wallet.utils.fromWei(nCoins, "ether") + "in favour of address " + Addr + "ETH carried out successfully. Check out transaction " + "<a href=\"https://" + CHAIN + ".etherscan.io/tx/" + txn + "\"target=\"_blank\">here" + "</a>";
+                    document.getElementById("status5").innerHTML = "Withdrawal of " + wallet.utils.fromWei(nCoins, "ether") + "ETH in favour of address " + Addr + " carried out successfully. Check out transaction " + "<a href=\"https://" + CHAIN + ".etherscan.io/tx/" + txn + "\"target=\"_blank\">here" + "</a>";
                     document.getElementById("status5").style.color = "green";
                     document.getElementById("status4").innerText = "";
                     document.getElementById("status4").style.color = "green";
