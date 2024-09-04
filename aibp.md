@@ -7,8 +7,7 @@ Bob can verify that a payment is withdrawable by him performing the following ch
 The check is carried out off-chain in e.g. Bob's browser. The property we want to ensure is that if this check passes then Bob should be convinced that the payment is withdrawable by him and only by him.
 ## Withdraw
 In order to withdraw, Bob chooses a random value $s\in Z_p$, compute $E=D^s$, a non-interactive Schnorr's proof of knowledge $\pi$ of dlog of $E$ in base $D$ (i.e., knowledge of $s$), the re-randomized token $Token_{Bob}'=Token_{Bob}^{r\cdot s}=H(id)^{msk\cdot r\cdot s}$ and sends to the smart contract the values $E,\pi,Token_{Bob}'$. 
-
-(Note that Bob knows $r$ since Bob can decrypt the IBE ciphertext $CT$ as above.)
+(Note that Bob can get $r$ since Bob can decrypt the IBE ciphertext $CT$ using his own token.)
 
 The smart contract verifies the non-interactive Schnorr's proof $\pi$ and checks that $e(Token_{Bob}',g_2)=e(E,MPK)$.
 Bob needs to include the withdrawal address as part of the FS challenge of the proof $\pi$ and the smart contract will verify the proof $\pi$ with respect to such address and will send the crypto asset to it. 
