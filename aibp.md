@@ -1,6 +1,6 @@
 # AIBP Protocol description
 ## Deposit
-The sender Alice, who wants to deposits crypto assets in favor of the receiver Bob, chooses a random value $r\in Z_p$, computes a CCA-IBE ciphertext $CT$ for the Bob's identity $id$ and message $r$, compute $D=H(id)^r$, and deposits on-chain the values $CT$ and $D$.
+The sender Alice, who wants to deposits crypto assets in favor of the receiver Bob, chooses a random value $r\in Z_p$, computes a (Boneh-Franklin) CCA-IBE ciphertext $CT$ for the Bob's identity $id$ and message $r$, compute $D=H(id)^r$, and deposits on-chain the values $CT$ and $D$.
 ## Check for withdrawable deposit
 Bob can verify that a payment is withdrawable by him performing the following check: using his own token for the identity $id$, decrypt $CT$ to get $r$ and check that $D=H(id)^r$.
 
