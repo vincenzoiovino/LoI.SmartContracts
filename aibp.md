@@ -11,7 +11,7 @@ In order to withdraw, Bob chooses a random value $s\in Z_p$, compute $E=D^s$, a 
 (Note that Bob knows $r$ since Bob can decrypt the IBE ciphertext $CT$ as above.)
 
 The smart contract verifies the non-interactive Schnorr's proof $\pi$ and checks that $e(Token_{Bob}',g_2)=e(E,MPK)$.
-Bob needs to include the withdrawal address as part of the FS challenge of the proof $\pi$ and the smart contract will verify the proof $\pi$ with respect to such address and will send the crypto asset to it.
-
+Bob needs to include the withdrawal address as part of the FS challenge of the proof $\pi$ and the smart contract will verify the proof $\pi$ with respect to such address and will send the crypto asset to it. 
+## Security
 Intuitively, the security property is satisfied due to the fact that if these checks pass then $Tok_{Bob}'$ is a correct re-randomized token, where the re-randomization is done with the values $r,s$ resp. corresponding to $CT$ and $\pi$ and thus Bob knows a valid token for identity $id$ and this is enough to conclude that the smart contract was invoked by the legitimate Bob.
 
