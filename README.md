@@ -2,7 +2,7 @@
 This repo contains examples of  Ethereum smart contracts to be used in combination with the [League of Identity](https://github.com/aragonzkresearch/leagueofidentity) (LoI) system.
 
 ## Anonymous Identity-Based Payments for web3
-[Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view) we described applications of `LoI` to an anonymous identity-based payment (`AnonIBP`) system. In `AnonIBP` Alice can make a deposit in favour of Bob by just specifying Bob's email address and nobody, except Bob, will be able to see that the deposit is in favour of him.
+[Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Fully-secure-AnonIBP-via-ZK-proofs-of-correct-decryption) we described applications of `LoI` to an anonymous identity-based payment (`AnonIBP`) system. In `AnonIBP` Alice can make a deposit in favour of Bob by just specifying Bob's email address and nobody, except Bob, will be able to see that the deposit is in favour of him.
 Note that this on-chain payment system can be seen as an identity-based variant of the [Bank3 for Wallets](https://github.com/vincenzoiovino/bank3) system.
 We implemented the idea in the contract [`AnonIBP.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/AnonIBP.sol) that can be used in combination with `LoI` tools as follows.
 
