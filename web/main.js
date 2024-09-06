@@ -778,8 +778,8 @@ document.getElementById("instructions").addEventListener("click", async () => {
     status3.innerText = "";
     status4.innerText = "";
     status5.innerText = "";
-    status2.innerHTML = "<h3>💸Deposit💸</h3>Choose a provider (Gmail or Facebook), input the quantity of ether (e.g. 0.0003) and the email or phone number of the receiver in favour of whom you want to make the deposit and click on \"Deposit\".<br>You need to sign the transaction with your wallet and after the transaction is confirmed you will receiver an id number." +
-        "<h3>🏧🔍Search for a deposit and withdraw🏧🔍</h3>To withdraw a deposit choose your provider (Gmail or Facebook), input an id number in the corresponding box and click the \"Search for Deposits\" button.<br>You will be asked to log into your Gmail or Facebook account and then you will be told whether there is a deposit corresponding to your profile and id number. In that case you can choose to perform a withdrawal using your wallet. The withdrawal will be carried out in favour of the Eth address specified in the corresponding field (it defaults to the address selected in your Wallet if empty).<h3>📞Phone numbers📞</h3>If the deposit has been done for your phone number, in order to perform a withdrawal, you need to link your phone number to your Gmail profile and make the phone number public. Then you can withdraw as explained above choosing Gmail as provider.<h4>📌Note on this demo📌</h4>1. The mobile version is unstable yet!<br>2. This demo is connected to a free developer Google account and as such if you want to test it your email address needs to be manually inserted into the list of test users. Contact ✉️vincenzo.iovino@azkr.org✉️<br>For more info check out the documentation at " + "<a href=\"https://github.com/vincenzoiovino/LoI.SmartContracts/\">Github</a>";
+    status2.innerHTML = "<h3>💸Deposit💸</h3>Choose a provider (Gmail, Facebook or Phone Numbers), input the quantity of ether (e.g. 0.0003) and the email or phone number of the receiver in favour of whom you want to make the deposit and click on \"Deposit\".<br>You need to sign the transaction with your wallet and after the transaction is confirmed you will receiver an id number." +
+        "<h3>🏧🔍Search for a deposit and withdraw🏧🔍</h3>To withdraw a deposit choose your provider (Gmail or Facebook), input an id number in the corresponding box and click the \"Search for Deposits\" button.<br>You will be asked to log into your Gmail or Facebook account and then you will be told whether there is a deposit corresponding to your profile and id number. In that case you can choose to perform a withdrawal using your wallet. The withdrawal will be carried out in favour of the Eth address specified in the corresponding field (it defaults to the address selected in your Wallet if empty).<br>In the future we will allow to withdraw in favor of other non-crypto users (Gmail, Facebook, phone numbers) as well.<h3>📞Phone numbers📞</h3>If the deposit has been done in favour of your phone number, in order to perform a withdrawal, you need to link your phone number to your Gmail profile and make the phone number public. Then you can withdraw as explained above.<h4>📌Note on this demo📌</h4>1. The mobile version is unstable yet!<br>2. This demo is connected to a free Google developer account and as such it may sometimes not work if your email address is not manually inserted into the list of allowed users. Contact ✉️vincenzo.iovino@azkr.org✉️ for that.<br>For more info check out the documentation on " + "<a href=\"https://github.com/vincenzoiovino/LoI.SmartContracts/\">Github</a>";
 
     const contract = new web3.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
     const Id = await contract.methods.getId().call();
@@ -798,7 +798,7 @@ document.getElementById("minus").addEventListener("click", async () => {
 
 hello.on('auth.logout', function() {
     document.getElementById("status1").style.color = "red";
-    document.getElementById("status1").innerText = "disconnected";
+    document.getElementById("status1").innerText = "Metamask not in use";
 });
 
 hello.init({
@@ -819,6 +819,7 @@ document.getElementById("depositButton").addEventListener("click", async () => {
         });
         return;
     }
+    document.getElementById("status5").style.color = "white";
     document.getElementById("status5").innerText = "Wait.";
     const accounts = await wallet.eth.getAccounts();
     const from = accounts[0];
@@ -860,6 +861,14 @@ document.getElementById("depositButton").addEventListener("click", async () => {
         .on('sent', function() {
             document.getElementById("status2").style.color = "white";
             waitdepositinterval = setInterval(setWaitDeposit, 2700);
+        })
+        .on("error", async function(error, receipt) {
+	    console.log(error);
+            document.getElementById("status5").innerText = "";
+            document.getElementById("status5").style.color = "red";
+            document.getElementById("status4").innerHTML = "Transaction not mined yet. It is still possible that the transaction will be mined later, check out your Wallet later. In that case the deposit id will correspond to the id at the time the transaction will be mined.";
+            document.getElementById("status2").innerText = "";
+            document.getElementById("status3").innerText = "";
         });
     //});
     document.getElementById("status5").innerText = "";
@@ -917,6 +926,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
         });
         var list = permutelist(List);
         Provider = provider = network;
+        document.getElementById("status5").style.color = "white";
         document.getElementById("status5").innerText = "Wait.";
         try {
             if (Token[provider + "." + email] == undefined) await get_token(access_token, list); // a call to get_token stores the token in the variable Token[provider + "." + email]
@@ -1021,12 +1031,21 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                 .on('sent', function() {
                     document.getElementById("status5").innerText = "";
                     document.getElementById("status2").style.color = "white";
-                    document.getElementById("status4").style.color = "white";
+                    document.getElementById("status4").style.color = "yellow";
                     document.getElementById("status5").style.color = "white";
                     document.getElementById("status4").innerText = "";
                     document.getElementById("status5").innerText = "";
                     document.getElementById("status3").innerText = "";
                     waitwithdrawalinterval = setInterval(setWaitWithdrawal, 2700);
+                    document.getElementById("status4").innerHTML = "Warning: if you will not receive a confirmation here, it is still possible that the transaction will be mined later, in that case check out your Wallet later. If the Wallet confirms the transaction, the withdrawal has taken effect. If instead the Wallet shows your transaction as cancelled, try again.";
+                })
+                .on("error", async function(error, receipt) {
+	            console.log(error);
+                    //document.getElementById("status5").innerText = "";
+                    //document.getElementById("status4").style.color = "red";
+                    //document.getElementById("status4").innerHTML = "Transaction not mined yet. It is still possible that the transaction will be mined later, check out your Wallet later. In that case the withdrawal will take effect. If instead the transaction will be cancelled, try again. Error: "+ error + " " + receipt;
+                    document.getElementById("status2").innerText = "";
+                    document.getElementById("status3").innerText = "";
                 });
             //});
         }
