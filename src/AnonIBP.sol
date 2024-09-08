@@ -35,7 +35,7 @@ contract AnonIBP {
         uint256 id;
     }
 
-    uint256 public Id = 1;
+    uint256 public Id=1;
     mapping(bytes32 => Deposit) public deposits; // each deposit is associated with the hash of a value x, where x is the random value needed to claim the deposits
     mapping(uint256 => bytes32) public deposits_index;
     // to search for withdrawable deposits the API will look for deposits_index[Id] to get the value h and then
@@ -60,7 +60,7 @@ contract AnonIBP {
         bytes8 CT
     ) external payable {
         BN254.G1 memory D;
-        require(deposits_full[D.X].CT == 0 && msg.value != 0);
+        require(deposits_full[Dx].CT == 0 && msg.value != 0); // before here there was D.X but I think it was a bug
         deposits_full[Dx].nCoins = msg.value;
         deposits_full[Dx].CT = CT;
         D.X = Dx;
@@ -162,6 +162,38 @@ contract AnonIBP {
         deposits_full[Dx].nCoins = 0;
     }
 
+    function LastCheckAndPay2(
+        uint256 Dx,
+        uint256 Dy,
+        uint256 Ex,
+        uint256 Ey,
+        uint256 pi_Ax,
+        uint256 pi_Ay,
+        uint256 pi_z,
+        address addr
+    ) internal {
+        BN254.G1 memory p0;
+
+        uint256 e = uint256(sha256(abi.encodePacked(Ex, pi_Ax, addr)));
+        BN254.G1 memory tmp;
+
+        tmp.X = Ex;
+        tmp.Y = Ey;
+        p0 = BN254.mul(tmp, e);
+
+        tmp.X = pi_Ax;
+        tmp.Y = pi_Ay;
+
+        p0 = BN254.pointAdd(tmp, p0);
+        tmp.X = Dx;
+        tmp.Y = Dy;
+        tmp = BN254.mul(tmp, pi_z);
+        require(BN254.equals(p0, tmp) == true);
+        payable(addr).transfer(deposits_full[Dx].nCoins);
+        deposits_full[Dx].nCoins = 0;
+    }
+
+
     function MakeWithdrawalFull(
         uint256 Dx,
         uint256 Dy,
@@ -176,5 +208,96 @@ contract AnonIBP {
         require(TestToken(Ex, Ey, tokenprimex, tokenprimey));
         LastCheckAndPay(Dx, Dy, Ex, Ey, pi_Ax, pi_Ay, pi_z);
     }
+
+  function MakeWithdrawalFullForSomeoneelse(
+        uint256 Dx,
+        uint256 Dy,
+        uint256 Ex,
+        uint256 Ey,
+        uint256 tokenprimex,
+        uint256 tokenprimey,
+        uint256 pi_Ax,
+        uint256 pi_Ay,
+        uint256 pi_z,
+        address addr
+    ) external {
+        require(TestToken(Ex, Ey, tokenprimex, tokenprimey));
+        LastCheckAndPay2(Dx, Dy, Ex, Ey, pi_Ax, pi_Ay, pi_z, addr);
+    }
+  function ChangeOwner(
+        uint256 Dx,
+        bytes8 newCT,
+        uint256 newDx,
+        uint256 newDy
+    ) internal {
+ // changing the owner
+        BN254.G1 memory D;
+        deposits_full[newDx].nCoins = deposits_full[Dx].nCoins;
+        deposits_full[newDx].CT = newCT;
+        D.X = newDx;
+        D.Y = newDy;
+        deposits_full[newDx].D = D;
+        deposits_full[newDx].id = deposits_full[Dx].id;
+        deposits_full_index[deposits_full[newDx].id] = Dx;
+        deposits_full[Dx].nCoins = 0;
+    }
+       
+
+  function LastCheck3(
+        uint256 Dx,
+        uint256 Dy,
+        uint256 Ex,
+        uint256 Ey,
+        uint256 pi_Ax,
+        uint256 pi_Ay,
+        uint256 pi_z,
+        bytes8 newCT,
+        uint256 newDx,
+        uint256 newDy
+    ) internal view  {
+        BN254.G1 memory p0;
+
+        uint256 e = uint256(sha256(abi.encodePacked(Ex, pi_Ax, newCT, newDx, newDy)));
+        BN254.G1 memory tmp;
+
+        tmp.X = Ex;
+        tmp.Y = Ey;
+        p0 = BN254.mul(tmp, e);
+
+        tmp.X = pi_Ax;
+        tmp.Y = pi_Ay;
+
+        p0 = BN254.pointAdd(tmp, p0);
+        tmp.X = Dx;
+        tmp.Y = Dy;
+        tmp = BN254.mul(tmp, pi_z);
+        require(BN254.equals(p0, tmp) == true);
+       
+
+     
+    }
+
+
+ function MakeWithdrawalFullUpdate(
+        uint256 Dx,
+        uint256 Dy,
+        uint256 Ex,
+        uint256 Ey,
+        uint256 tokenprimex,
+        uint256 tokenprimey,
+        uint256 pi_Ax,
+        uint256 pi_Ay,
+        uint256 pi_z,
+        bytes8 newCT,
+        uint256 newDx,
+        uint256 newDy
+       ) external {
+        require(TestToken(Ex, Ey, tokenprimex, tokenprimey));
+        LastCheck3(Dx, Dy, Ex, Ey, pi_Ax, pi_Ay, pi_z, newCT, newDx, newDy);
+        require(deposits_full[newDx].CT == 0);
+        ChangeOwner(Dx, newCT, newDx, newDy);
+    }
+
+
 }
 

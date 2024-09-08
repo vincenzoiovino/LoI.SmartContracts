@@ -91,7 +91,8 @@ const Mpk_hex = "1 2edf2ec65e7af8c70d9af1faad9866ec3eb9cfe58d8545af3ad694a87cc6c
 // initialize the contract with e.g.:
 // [[17650401953877851439635577206110766953856761406923475418003307457561889540315,21200720758627169108385381836933178062103968834651067635052438190446348782562],[19663398795984464822343332592454950952846592629461984989829477392159714729078,21167609696476223494515294740194964327788425825089244977948745836321546859634]]
 
-const contractAnonIBPAddress = "0x79b2231A9104Cbb4c7786910b429991B98eA81d9";
+//const contractAnonIBPAddress = "0x79b2231A9104Cbb4c7786910b429991B98eA81d9";
+const contractAnonIBPAddress = "0xA4196Dbdae847F397991b43d9C86fDC7e6781773";
 const contractAnonIBPABI = [{
     "inputs": [{
         "internalType": "bytes32",
@@ -177,6 +178,106 @@ const contractAnonIBPABI = [{
         "type": "uint256"
     }],
     "name": "MakeWithdrawalFull",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "uint256",
+        "name": "Dx",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "Dy",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "Ex",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "Ey",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "tokenprimex",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "tokenprimey",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "pi_Ax",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "pi_Ay",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "pi_z",
+        "type": "uint256"
+    }, {
+        "internalType": "address",
+        "name": "addr",
+        "type": "address"
+    }],
+    "name": "MakeWithdrawalFullForSomeoneelse",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+}, {
+    "inputs": [{
+        "internalType": "uint256",
+        "name": "Dx",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "Dy",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "Ex",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "Ey",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "tokenprimex",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "tokenprimey",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "pi_Ax",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "pi_Ay",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "pi_z",
+        "type": "uint256"
+    }, {
+        "internalType": "bytes8",
+        "name": "newCT",
+        "type": "bytes8"
+    }, {
+        "internalType": "uint256",
+        "name": "newDx",
+        "type": "uint256"
+    }, {
+        "internalType": "uint256",
+        "name": "newDy",
+        "type": "uint256"
+    }],
+    "name": "MakeWithdrawalFullUpdate",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -863,12 +964,12 @@ document.getElementById("depositButton").addEventListener("click", async () => {
             waitdepositinterval = setInterval(setWaitDeposit, 2700);
         })
         .on("error", async function(error, receipt) {
-	    console.log(error);
-            document.getElementById("status5").innerText = "";
-            document.getElementById("status5").style.color = "red";
-            document.getElementById("status4").innerHTML = "Transaction not mined yet. It is still possible that the transaction will be mined later, check out your Wallet later. In that case the deposit id will correspond to the id at the time the transaction will be mined.";
-            document.getElementById("status2").innerText = "";
-            document.getElementById("status3").innerText = "";
+            console.log(error);
+            //document.getElementById("status5").innerText = "";
+            //document.getElementById("status5").style.color = "red";
+            //document.getElementById("status4").innerHTML = "Transaction not mined yet. It is still possible that the transaction will be mined later, check out your Wallet later. In that case the deposit id will correspond to the id at the time the transaction will be mined.";
+            //document.getElementById("status2").innerText = "";
+            //document.getElementById("status3").innerText = "";
         });
     //});
     document.getElementById("status5").innerText = "";
@@ -997,6 +1098,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
             const accounts = await wallet.eth.getAccounts();
             Addr = document.getElementById("addrinput").value;
             if (Addr == "") Addr = accounts[0];
+            console.log("DEBUG: withdrawal in favoir of address: " + Addr);
             await decryptAndVerify(email);
             const contract = new wallet.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
             const encodedDx = wallet.eth.abi.encodeParameter('uint256', BigInt(D_EthereumX));
@@ -1010,8 +1112,9 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
             const encodedpi_z = wallet.eth.abi.encodeParameter('uint256', BigInt(pi_z_Ethereum));
             document.getElementById("status5").innerText = "Wait.";
             //await ethereum.request({ method: 'eth_requestAccounts' }).then(async function () {
-            await contract.methods.MakeWithdrawalFull(encodedDx, encodedDy, encodedEx, encodedEy, encodedtokenprimex, encodedtokenprimey, encodedpi_Ax, encodedpi_Ay, encodedpi_z).send({
-                    from: Addr,
+            if (document.getElementById("addrinput").value == "")
+                await contract.methods.MakeWithdrawalFull(encodedDx, encodedDy, encodedEx, encodedEy, encodedtokenprimex, encodedtokenprimey, encodedpi_Ax, encodedpi_Ay, encodedpi_z).send({
+                    from: accounts[0],
                     value: 0
                 }).on("confirmation", async function(confirmationNumber, receipt) {
                     console.log("confirmationNumber", confirmationNumber);
@@ -1040,13 +1143,54 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
                     document.getElementById("status4").innerHTML = "Warning: if you will not receive a confirmation here, it is still possible that the transaction will be mined later, in that case check out your Wallet later. If the Wallet confirms the transaction, the withdrawal has taken effect. If instead the Wallet shows your transaction as cancelled, try again.";
                 })
                 .on("error", async function(error, receipt) {
-	            console.log(error);
+                    console.log(error);
                     //document.getElementById("status5").innerText = "";
                     //document.getElementById("status4").style.color = "red";
                     //document.getElementById("status4").innerHTML = "Transaction not mined yet. It is still possible that the transaction will be mined later, check out your Wallet later. In that case the withdrawal will take effect. If instead the transaction will be cancelled, try again. Error: "+ error + " " + receipt;
                     document.getElementById("status2").innerText = "";
                     document.getElementById("status3").innerText = "";
                 });
+            else {
+                const encodedaddr = wallet.eth.abi.encodeParameter('address', Addr.substr(2));
+                console.log(encodedaddr.substr(26));
+                await contract.methods.MakeWithdrawalFullForSomeoneelse(encodedDx, encodedDy, encodedEx, encodedEy, encodedtokenprimex, encodedtokenprimey, encodedpi_Ax, encodedpi_Ay, encodedpi_z, encodedaddr.substr(26)).send({
+                        from: accounts[0],
+                        value: 0
+                    }).on("confirmation", async function(confirmationNumber, receipt) {
+                        console.log("confirmationNumber", confirmationNumber);
+                        clearInterval(waitdepositinterval);
+                        clearInterval(waitwithdrawalinterval);
+                        document.getElementById("status5").innerText = "";
+                        var txn = confirmationNumber.receipt.transactionHash;
+                        document.getElementById("status5").innerHTML = "Withdrawal of " + wallet.utils.fromWei(nCoins, "ether") + "ETH in favour of address " + Addr + " carried out successfully. Check out transaction " + "<a href=\"https://" + CHAIN + ".etherscan.io/tx/" + txn + "\"target=\"_blank\">here" + "</a>";
+                        document.getElementById("status5").style.color = "green";
+                        document.getElementById("status4").innerText = "";
+                        document.getElementById("status4").style.color = "green";
+                        document.getElementById("status2").innerText = "";
+                        document.getElementById("status3").innerText = "";
+
+
+                    })
+                    .on('sent', function() {
+                        document.getElementById("status5").innerText = "";
+                        document.getElementById("status2").style.color = "white";
+                        document.getElementById("status4").style.color = "yellow";
+                        document.getElementById("status5").style.color = "white";
+                        document.getElementById("status4").innerText = "";
+                        document.getElementById("status5").innerText = "";
+                        document.getElementById("status3").innerText = "";
+                        waitwithdrawalinterval = setInterval(setWaitWithdrawal, 2700);
+                        document.getElementById("status4").innerHTML = "Warning: if you will not receive a confirmation here, it is still possible that the transaction will be mined later, in that case check out your Wallet later. If the Wallet confirms the transaction, the withdrawal has taken effect. If instead the Wallet shows your transaction as cancelled, try again.";
+                    })
+                    .on("error", async function(error, receipt) {
+                        console.log(error);
+                        //document.getElementById("status5").innerText = "";
+                        //document.getElementById("status4").style.color = "red";
+                        //document.getElementById("status4").innerHTML = "Transaction not mined yet. It is still possible that the transaction will be mined later, check out your Wallet later. In that case the withdrawal will take effect. If instead the transaction will be cancelled, try again. Error: "+ error + " " + receipt;
+                        document.getElementById("status2").innerText = "";
+                        document.getElementById("status3").innerText = "";
+                    });
+            }
             //});
         }
 
