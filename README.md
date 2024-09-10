@@ -1,4 +1,4 @@
-# LoI.SmartContracts
+# LoI.SmartContracts and Apps
 This repo contains examples of  Ethereum smart contracts and Apps that can be used in combination with the [League of Identity](https://github.com/aragonzkresearch/leagueofidentity) (LoI) system.
 
 ## Anonymous Identity-Based Payments for web3
