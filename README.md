@@ -5,6 +5,7 @@ This repo contains examples of  Ethereum smart contracts to be used in combinati
 [Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Fully-secure-AnonIBP-via-ZK-proofs-of-correct-decryption) we described applications of `LoI` to an anonymous identity-based payment (`AnonIBP`) system. 
 
 🛠----------------------------------🛠
+
 Using `AnonIBP` Alice can deposit ETH (SepoliaEth in this demo - easily generalizable to any token in the future) in favor of  the Bob's Gmail or Facebook account or a Bob's phone number (it is sufficient that this phone number be linked to his Gmail account).  
 
 Bob, who is not a crypto user, can check that there are ETH coins in favor of him without the need of installing any wallet by just using the ability of logging into his Gmail, Facebook etc. accounts .
