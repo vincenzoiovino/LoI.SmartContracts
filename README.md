@@ -4,7 +4,7 @@ This repo contains examples of  Ethereum smart contracts to be used in combinati
 ## Anonymous Identity-Based Payments for web3
 [Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Fully-secure-AnonIBP-via-ZK-proofs-of-correct-decryption) we described applications of `LoI` to an anonymous identity-based payment (`AnonIBP`) system. 
 
-🛠----------------------------------🛠
+🛠---------------------------------------------------------------------------🛠
 
 Using `AnonIBP` Alice can deposit ETH (SepoliaEth in this demo - easily generalizable to any token in the future) in favor of  the Bob's Gmail or Facebook account or a Bob's phone number (it is sufficient that this phone number be linked to his Gmail account).  
 
@@ -15,7 +15,8 @@ Bob in the future can decide to become a crypto user and to install a wallet and
 
 In the future he will be also able to withdraw in favor of other Gmail, Facebook, etc. accounts without even having a wallet - the GAS fees will be paid by paymasters that will take a fee for this service.
 Both deposits and withdrawals are fully anonymous, that is they do not reveal the Gmail, Facebook, etc. account.
-🛠----------------------------------🛠
+
+🛠---------------------------------------------------------------------------🛠
 
 Note that this on-chain payment system can be seen as an identity-based variant of the [Bank3 for Wallets](https://github.com/vincenzoiovino/bank3) system.
 We implemented the idea in the contract [`AnonIBP.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/AnonIBP.sol) that can be used in combination with `LoI` tools as follows.
