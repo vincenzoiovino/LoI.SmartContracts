@@ -2,19 +2,42 @@
 This repo contains examples of  Ethereum smart contracts to be used in combination with the [League of Identity](https://github.com/aragonzkresearch/leagueofidentity) (LoI) system.
 
 ## Anonymous Identity-Based Payments for web3
-[Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Fully-secure-AnonIBP-via-ZK-proofs-of-correct-decryption) we described applications of `LoI` to an anonymous identity-based payment (`AnonIBP`) system. In `AnonIBP` Alice can make a deposit in favour of Bob by just specifying Bob's email address and nobody, except Bob, will be able to see that the deposit is in favour of him.
+[Here](https://hackmd.io/noiVZo2dTJ6Wiejt2IJvMg?view#Fully-secure-AnonIBP-via-ZK-proofs-of-correct-decryption) we described applications of `LoI` to an anonymous identity-based payment (`AnonIBP`) system. 
+
+🛠 Using `AnonIBP` Alice can deposit ETH (SepoliaEth in this demo - easily generalizable to any token in the future) in favor of  the Bob's Gmail or Facebook account or a Bob's phone number (it is sufficient that this phone number be linked to his Gmail account).  
+
+Bob, who is not a crypto user, can check that there are ETH coins in favor of him without the need of installing any wallet by just using the ability of logging into his Gmail, Facebook etc. accounts .
+The assets are securely and anonymously deposited into a smart contract.
+
+Bob in the future can decide to become a crypto user and to install a wallet and he will be able to withdraw in favor of any Eth address - his own or someone else's address. 
+
+In the future he will be also able to withdraw in favor of other Gmail, Facebook, etc. accounts without even having a wallet - the GAS fees will be paid by paymasters that will take a fee for this service.
+
+Both deposits and withdrawals are fully anonymous, that is they do not reveal the Gmail, Facebook, etc. account.
+
 Note that this on-chain payment system can be seen as an identity-based variant of the [Bank3 for Wallets](https://github.com/vincenzoiovino/bank3) system.
 We implemented the idea in the contract [`AnonIBP.sol`](https://github.com/vincenzoiovino/LoI.SmartContracts/blob/main/src/AnonIBP.sol) that can be used in combination with `LoI` tools as follows.
 
 
-The system has two variants, a basic one that can be used when Alice and Bob communicate at deposit time and a general one that does not need pre-communication. 
-
+We also consider a basic variant that can be used when Alice and Bob communicate at deposit time that, unlike the general one, does not need pre-communication. 
 Precisely, if the basic variant were used naively without pre-communication then Alice could perform an alleged deposit in favour of Bob but Alice could still know the witness that can be used to perform the withdrawal, that is even if Bob verifies that there is a deposit in favour of himself this would not be sufficient to exclude that Alice can claim it back. 
 
-For this reason, this variant can be used only in a setting where, at deposit time, it is Bob the one to compute the ciphertext and request Alice to deposit it onchain along with the coins. The general one does not suffer this issue and a description of its underlying cryptographic protocol can be found [here](./aibp.md).
+A description of the underlying cryptographic protocol (for the general variant) can be found [here](./aibp.md).
 
 
-### How to Test the basic and general variants
+### Web Implementation
+Under the folder `web` you can find a web porting of the AnonIBP system. 
+This requires you run the command:
+```bash
+node server.js
+```
+which is needed to use the tinyurl service.
+Edit the file `main.js` with your parameters, the ones therein are only to be used as a reference.
+
+🔷Live Demo:
+Have also a look at a [live demo](https://demo.azkr.ch) - it works only on desktop browsers with Metamask extension and uses Sepolia testnet so feel safe to test it.
+
+## How to Test the basic and general variants from command line
 We assume the reader familiar with the basic `LoI` commands described [here](https://github.com/aragonzkresearch/leagueofidentity) and we assume that the contract `AnonIBP.sol` has been deployed to Ethereum.
 
 Precisely, recall that when you compute the master public key with the command:
@@ -29,7 +52,7 @@ reconstructed master public key as Ethereum tuple: [[137065029502079103437065605
 
 In that case, we suppose that the file `mpk` contains the first string (i.e., `1 23898a0ae202d5b67a91f2074176cb8dabd3399fecfbd7022aa39c80b66fa066 1e4d9b127927dfc64355a53b75d6b03d92eedf5bd9b660f76d085b236c63c38a 2abbd2f34f5fbb09e6d7474a4037d0e300b9eb00df83db94c5e521fffc43893c 2dddbf99aaabe6352a17aba4a7bbd5a8eb2eb40d25f95ee6f9b10e2cf8c564a4`) and the `AnonIBP.sol` contract must be initialized with the latter string (i.e., `[[13706502950207910343706560538280652811815673551122904553485492739850509730698,16073960482686030108142259199455609210079009765551608569343005038231348551782],[20745873763960892318317663603992660951953361594491582428518987779361705649316,19328995967969664651933314377729245708471534526295335040608300242158949206332]]`). 
 
-#### Make a deposit in the basic variant
+####Make a deposit in the basic variant
 Suppose Alice wants to make a deposit of `n` coins in favour of Bob who owns the email address `bob@oldcrypto.com`. We suppose that `oldcrypto.com` is a Google Business domain.
 Alice does the following. 
 
@@ -43,7 +66,7 @@ Let us call `CT` the first string (with `0x` prepended) and `h` the second strin
 Alice can invoke the method `MakeDeposit` of the `AnonIBP` contract with the so given parameters `h` and `CT` along with a transfer of `n` coins.
 The coins have been now deposited into the contract and it is not visibile to anyone, except to Bob, that the deposit is in favour of `bob@oldcrypto.com`.
 
-#### Make a withdrawal in the basic variant
+### Make a withdrawal in the basic variant
 Bon sees the transaction for the deposit corresponding to `h` and the hex string `CT` and save it ino the file `ciphertext`.
 Bob can now get his Google access token via the `LoI` web interface and use it to get a token for his email address from the `LoI` nodes and does the follwing. Suppose that Bob has stored the token into the file `google_tok`.
 
@@ -55,7 +78,7 @@ This will output an hex string of the form `fd5daac9cd0e8b4e1f80d34c8ff90b35cc54
 Bob can now invoke the method `MakeWithdrawal` of `AnonIBP.sol` with input `h` and `x`. This will transfer the `n` coins from the contract to Bob.
 
 
-#### Make a deposit in the general variant
+### Make a deposit in the general variant
 Suppose Alice wants to make a deposit of `n` coins in favour of Bob who owns the email address `bob@oldcrypto.com`. We suppose that `oldcrypto.com` is a Google Business domain.
 Alice does the following. 
 
@@ -72,7 +95,7 @@ Let us call `CT` the first string with `0x` prepended (i.e. `0x32647a7236776532`
 
 Alice can invoke the method `MakeDepositFull` of the `AnonIBP` contract with the so given parameters `D.X`, `D.Y`, and `CT` along with a transfer of `n` coins.
 The coins have been now deposited into the contract and it is not visibile to anyone, except to Bob, that the deposit is in favour of `bob@oldcrypto.com`.
-#### Verify that there is a payment in favour of yourself
+### Verify that there is a payment in favour of yourself
 Bob can at any time get the values `CT` and `D` from the chain and store them resp. in the files `ciphertext` and `hash`.
 
 (Precisely, the file `hash` should contain the point `D` in the format expected by the `mcl` library. We are supposing that this has been already done. As TODO, the file `hash` input to the next command should contain a point in the ethereum tuple format and convert it internally.)
@@ -102,7 +125,7 @@ decrypted flag+message: 1daa239b83f75f89f415c03c9f856378eb51480784a1e48e9d6fd65b
 The field ``success`` in the JSON string indicates that the deposit is withdrawable. In that case the ethereum tuples ``pi_as_ethereum_tuple`` is the witness that Bob can use to perform a withdrawal. Henceforth we will indicate such a tuple as ``pi``.
 
 
-#### Make a withdrawal in the general variant
+### Make a withdrawal in the general variant
 After that Bob has verified above that a certain deposit is in favour of himself, Bob can decide to withdraw by 
 invoking the method `MakeWithdrawalFull` of `AnonIBP.sol` with input the argument `pi_as_ethereum_tuple` (precisely, it must be passed as a list) . This will transfer the `n` coins from the contract to Bob.
 #### Deposits in favour of phone numbers
@@ -110,15 +133,6 @@ The contract and the commands can be also used to make deposits in favour of pho
 Bob just needs to have (or create) a Google account and to verify his phone number in that Google account.
 Then, as explained [here](https://github.com/aragonzkresearch/leagueofidentity#phone-number-encryption-phencryption), Bob can get a token for his phone number. 
 Alice can make the deposit specifying the Bob's phone number instead of his email address.
-
-### Web Implementation
-Under the folder `web` you can find a web porting of the AnonIBP system. 
-This requires you run the command:
-```bash
-node server.js
-```
-which is needed to use the tinyurl service.
-Edit the file `main.js` with your parameters, the ones therein are only to be used as a reference.
 
 ## DAOs of Google Business domains
 As an example we provide a template of a DAO whose members can be the owners of emails of the form `user@domain.com` where `domain.com` is a parameter of the DAO.
