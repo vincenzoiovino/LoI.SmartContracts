@@ -1,7 +1,6 @@
 var web3, ethereum, wallet;
 const CHAIN_ID = 11155111; // Goerli = 5, Sepolia = 11155111
-//const infuraID = ""; // Your InfuraID
-const infuraID = "89235f1ec0f84511ade8dcf9aa9529f1"; // Your InfuraID
+const infuraID = ""; // Your InfuraID
 
 const KEY = "https://sepolia.infura.io/v3/" + infuraID; // infura api key - IN A REAL IMPLEMENTATION THIS SHOULD NOT BE PUBLIC AND SHOULD BE HIDDEN IN THE BACKEND
 
