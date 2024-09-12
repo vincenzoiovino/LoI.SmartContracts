@@ -1,6 +1,7 @@
 var web3, ethereum, wallet;
 const CHAIN_ID = 11155111; // Goerli = 5, Sepolia = 11155111
-const infuraID = ""; // Your InfuraID
+//const infuraID = ""; // Your InfuraID
+const infuraID = "89235f1ec0f84511ade8dcf9aa9529f1"; // Your InfuraID
 
 const KEY = "https://sepolia.infura.io/v3/" + infuraID; // infura api key - IN A REAL IMPLEMENTATION THIS SHOULD NOT BE PUBLIC AND SHOULD BE HIDDEN IN THE BACKEND
 
@@ -633,7 +634,7 @@ var pk = [];
 var hash = [];
 var Q = [];
 var lambda = [];
-const date_path = "now";
+const date_path = "0.2024";
 var provider;
 const group = "0";
 const fetch_friends = "null";
@@ -921,20 +922,20 @@ document.getElementById("depositButton").addEventListener("click", async () => {
         return;
     }
     document.getElementById("status5").style.color = "white";
-    document.getElementById("status5").innerText = "Wait.";
+    document.getElementById("status5").innerText = "Wait. (1/4)";
     const accounts = await wallet.eth.getAccounts();
     const from = accounts[0];
     //   const amount = document.getElementById("amountinput").value;
     const amount = nCoinsinput;
     const amountWei = await wallet.utils.toWei(amount, "ether");
-    document.getElementById("status5").innerText = "Wait..";
+    document.getElementById("status5").innerText = "Wait.. (2/4).";
     const contract = new wallet.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
-    document.getElementById("status5").innerText = "Wait...";
+    document.getElementById("status5").innerText = "Wait... (3/4)";
 
     const encodedDx = await wallet.eth.abi.encodeParameter('uint256', BigInt(D_EthereumX));
     const encodedDy = await wallet.eth.abi.encodeParameter('uint256', BigInt(D_EthereumY));
     const encodedCT = await wallet.eth.abi.encodeParameter('bytes8', "0x" + Ciphertext_Ethereum).slice(0, 18);
-    document.getElementById("status5").innerText = "Wait....";
+    document.getElementById("status5").innerText = "Wait.... (4/4)";
 
 
     //await ethereum.request({ method: 'eth_requestAccounts' }).then(async function () {
@@ -1028,7 +1029,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
         var list = permutelist(List);
         Provider = provider = network;
         document.getElementById("status5").style.color = "white";
-        document.getElementById("status5").innerText = "Wait.";
+        document.getElementById("status5").innerText = "Wait. (1/8)";
         try {
             if (Token[provider + "." + email] == undefined) await get_token(access_token, list); // a call to get_token stores the token in the variable Token[provider + "." + email]
         } catch (err) {
@@ -1038,19 +1039,19 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
         console.log(provider + email + Token[provider + "." + email]);
         console.log(Token[provider + "." + email]);
         console.log(Token[Provider + "." + email]);
-        document.getElementById("status5").innerText = "Wait..";
+        document.getElementById("status5").innerText = "Wait.. (2/8)";
 
 
         const id = document.getElementById("idinput").value;
         const contract = new web3.eth.Contract(contractAnonIBPABI, contractAnonIBPAddress);
         const encodedId = web3.eth.abi.encodeParameter('uint256', BigInt(id));
-        document.getElementById("status5").innerText = "Wait...";
+        document.getElementById("status5").innerText = "Wait... (3/8)";
         const Dx = await contract.methods.getDxFromId(encodedId).call();
         console.log("Dx:" + Dx);
         const encodedDx = web3.eth.abi.encodeParameter('uint256', BigInt(Dx));
-        document.getElementById("status5").innerText = "Wait.... ";
+        document.getElementById("status5").innerText = "Wait.... (4/8)";
         const Dy = await contract.methods.getDyFromDx(encodedDx).call();
-        document.getElementById("status5").innerText = "Wait.....";
+        document.getElementById("status5").innerText = "Wait..... (5/8)";
         console.log("Dy:" + Dy);
         var X = new mcl.Fp();
         var Y = new mcl.Fp();
@@ -1064,10 +1065,10 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
         D.setZ(Z);
         D_Serialized = D.getStr(16);
         const nCoins = await contract.methods.getnCoinsFromDx(encodedDx).call();
-        document.getElementById("status5").innerText = "Wait......";
+        document.getElementById("status5").innerText = "Wait...... (6/8)";
         console.log("nCoins:" + nCoins);
         const CT = await contract.methods.getCTFromDx(encodedDx).call();
-        document.getElementById("status5").innerText = "Wait.......";
+        document.getElementById("status5").innerText = "Wait....... (7/8)";
         console.log("CT:" + CT);
         Ciphertext_Ethereum = CT.substr(2);
         //    Addr = "0xc4B22276E2e86E05baFecF4c08F3C682Eb91a9b1";
@@ -1075,7 +1076,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
         Provider = document.getElementById("menu").value;
         Addr = "0000000000000000000000000000000000000000000000000000000000000001"; //perform verification with respect to arbitrary address
         var success = await decryptAndVerify(email);
-        document.getElementById("status5").innerText = "Wait........";
+        document.getElementById("status5").innerText = "Wait........ (8/8)";
         if (success === "1" && web3.utils.fromWei(nCoins, "ether") === "0.") await swal("You already withdrew this deposit.", {
             icon: "error",
         });
@@ -1110,7 +1111,7 @@ document.getElementById("withdrawButton").addEventListener("click", async () => 
             const encodedpi_Ax = wallet.eth.abi.encodeParameter('uint256', BigInt(pi_A_EthereumX));
             const encodedpi_Ay = wallet.eth.abi.encodeParameter('uint256', BigInt(pi_A_EthereumY));
             const encodedpi_z = wallet.eth.abi.encodeParameter('uint256', BigInt(pi_z_Ethereum));
-            document.getElementById("status5").innerText = "Wait.";
+            document.getElementById("status5").innerText = "Wait. (1/1)";
             //await ethereum.request({ method: 'eth_requestAccounts' }).then(async function () {
             if (document.getElementById("addrinput").value == "")
                 await contract.methods.MakeWithdrawalFull(encodedDx, encodedDy, encodedEx, encodedEy, encodedtokenprimex, encodedtokenprimey, encodedpi_Ax, encodedpi_Ay, encodedpi_z).send({
@@ -1286,9 +1287,9 @@ async function cca(msg, email, fp) {
 
 async function deposit(email) {
     // recall that before calling deposit you should set Provider = document.getElementById("menu").value;
-    const date = new Date();
-    month = date.getMonth();
-    year = date.getFullYear();
+    //const date = new Date();
+    month = '0'; // date.getMonth();
+    year = '2024'; //date.getFullYear();
     const InputAIBC = new Uint8Array(32);
     self.crypto.getRandomValues(InputAIBC);
     const fp = nobleCurves.Field(ORDER);
@@ -1313,9 +1314,9 @@ async function decryptAndVerify(email) { // it expects that the global variable 
     var addr = Addr.substr(2);
     var provider = Provider;
     const AIBCInput = D_Serialized;
-    const date = new Date();
-    month = date.getMonth();
-    year = date.getFullYear();
+    //const date = new Date();
+    month =  '0'; // date.getMonth();
+    year = '2024'; // date.getFullYear();
     const mpk = Mpk;
     var FrTmp = new mcl.G1();
     FrTmp.setStr(Token[provider + "." + email], 16);
